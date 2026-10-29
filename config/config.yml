@@ -1,0 +1,97 @@
+# Configuração da vitrine. Mesmas chaves da conferência privada; aqui todos os
+# caminhos apontam para os dados sintéticos (inventados) de dados_sinteticos/.
+# Caminhos relativos são lidos a partir da raiz do repositório.
+projeto:
+  nome: "Conferência do orçamento de juventude (vitrine com dados sintéticos)"
+  data_referencia_precos: "dez/2025 (fictícia)"
+caminhos:
+  juventude_nova: "dados_sinteticos/juventude_safra_nova.csv"
+  juventude_antiga: "dados_sinteticos/juventude_safra_antiga.csv"
+  uniao_consolidada: "dados_sinteticos/uniao_consolidada_safra_antiga.csv"
+  uniao_nova: "dados_sinteticos/uniao_por_gnd_safra_nova.csv"
+  ipca: "dados_sinteticos/ipca_fatores.csv"
+  recorte_acoes: "entradas/recorte_acoes.csv"
+  gabaritos: "config/gabaritos.csv"
+  causas_conhecidas: "config/causas_conhecidas.yml"   # causas verificadas antes de rodar, por id de checagem
+  executivo_python: ""          # a vitrine não tem a implementação de referência em Python
+  saidas: "saidas"
+ferramentas:
+  # Caminho do Quarto. Vazio: o rodar.R procura o Quarto no PATH e depois pelo
+  # pacote {quarto}. Só é preciso preencher se nenhum dos dois o encontrar
+  # (por exemplo, "C:/Program Files/Quarto/bin/quarto.exe").
+  quarto: ""
+periodo:
+  ano_inicio: 2005
+  ano_fim: 2025
+  ultimo_ano_safra_antiga: 2024   # até aqui a safra antiga é completa
+ipca:
+  ano_conferido: 2019
+  fator_esperado: 1.3881425       # o certo, que está em ipca_fatores.csv
+  fator_errado_conhecido: 1.4453340   # o que ipca_fatores_com_erro.csv traz; a trava recusa
+denominador:
+  fase: "empenhado"
+  gnd_incluidos: ["1", "3", "4", "5"]
+  orgaos_excluidos: ["Z0100", "Z7100", "Z9300"]   # Câmara, encargos e operações de crédito fictícios
+  prefixo_orgaos_excluidos: "1"     # Judiciário fictício: órgãos 1Zxxx
+concentracao:
+  limiar: 0.80
+  fase: "dotacao_atual"
+tolerancias:                      # as mesmas da conferência privada, definidas antes de rodar
+  reais: 1.00
+  pontos_percentuais: 0.05
+  contagem: 0
+recorte:
+  # Ações que o recorte tem de conter (inclusões manuais que não podem faltar).
+  acoes_obrigatorias: ["ZM01"]
+
+# Textos do relatório que dependem do projeto. O código do relatório é o mesmo
+# da conferência privada; o que muda fica aqui.
+relatorio:
+  # Linha abaixo do título do relatório.
+  subtitulo: "Vitrine com dados sintéticos: nenhum número é do orçamento real"
+  # De onde vêm os dados (legenda do gráfico e textos sobre a base).
+  fonte_dados: "arquivos sintéticos no formato do SIOP, gerados por scripts/gerar_dados_sinteticos.R"
+  publicacoes: "nos gabaritos sintéticos, calculados pelo script que gera os dados"
+  # Sem artigo: o relatório escreve "sem usar o ...", "usado pelo ...",
+  # "nenhuma linha do ...". Precisa ser um nome masculino.
+  referencia: "cálculo do script que gera os dados sintéticos"
+  # Quem decide o que fazer com uma divergência sem explicação.
+  responsavel_decisao: "pessoa responsável pela conferência"
+  # Nome de cada arquivo lido, na tabela de procedência do relatório.
+  papeis:
+    juventude_nova: "Recorte sintético, safra nova"
+    juventude_antiga: "Recorte sintético, safra antiga"
+    uniao_consolidada: "União sintética inteira, safra antiga"
+    uniao_nova: "União sintética por grupo de despesa, safra nova"
+    ipca: "Fatores de correção sintéticos"
+    recorte_acoes: "Lista de ações do recorte sintético"
+    gabaritos: "Números esperados (gabaritos sintéticos)"
+    causas_conhecidas: "Causas conhecidas das divergências"
+    executivo_python: "Gasto do Executivo guardado pela versão em Python (não existe na vitrine)"
+    config: "Configuração (regras e tolerâncias)"
+  safra_antiga: "na data fictícia da primeira extração"
+  safra_nova: "na data fictícia da segunda extração"
+  exclusoes_denominador: "a Câmara fictícia, os tribunais fictícios (órgãos que começam com 1), os encargos financeiros fictícios e as operações oficiais de crédito fictícias"
+  familias:
+    - titulo: "Gabaritos sintéticos"
+      fonte_regex: '^scripts/gerar_dados_sinteticos\.R'
+      o_que: "os totais por ano e por fase, o total e a média do período, a divisão por grupo de despesa, o valor de algumas ações, a taxa de execução, a participação no gasto do Executivo e o ano de maior participação, o gasto do Executivo usado como denominador, as contagens, a concentração e os quatro anos de maior dotação."
+      com_o_que: "os valores que `scripts/gerar_dados_sinteticos.R` calcula a partir da verdade inventada, só com o R básico, por um caminho independente do pipeline."
+      se_divergir: "nos dados sintéticos, uma divergência indica erro no pipeline ou no gerador: comparar as duas contas para o mesmo número."
+
+# Valores que os testes automáticos conferem (os mesmos testes da conferência
+# privada, com os valores sintéticos).
+testes:
+  # Números de controle, copiados de config/gabaritos.csv como o gerador os
+  # escreve: os testes conferem que o arquivo não mudou e que cada um confere.
+  ancoras:
+    total_periodo_pago: "1515274879.11"
+    total_acao_ZM01_2021_dotacao_atual: "14025006.65"
+    taxa_execucao_periodo: "84.4463"
+    n_programas: "5"
+    n_acoes: "9"
+    ranking_dotacao: "2009|2024|2018|2008"
+  prefixos_de_id_proibidos: []
+  # Nos dados sintéticos, a ação ZA05 muda de programa em 2015 e a base da
+  # União passa a ter linhas dela fora do recorte: até 2014 o recorte bate.
+  recorte_bate_na_uniao_ate: 2014

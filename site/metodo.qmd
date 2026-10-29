@@ -1,0 +1,114 @@
+---
+title: "Método"
+subtitle: "Como a conferência funciona, etapa por etapa"
+---
+
+## Visão geral
+
+A conferência é um *pipeline*: uma sequência de etapas em que cada uma recebe o resultado da anterior. Ela é montada com o pacote `{targets}`, que guarda o resultado de cada etapa e, quando algo muda (um arquivo de entrada, uma função), refaz só o que depende daquela mudança. Isso permite rodar tudo de novo com um único comando e saber exatamente o que foi recalculado.
+
+```{mermaid}
+flowchart TD
+  A["Fontes oficiais<br/>(arquivos do sistema de orçamento)"] --> B["Registro de procedência<br/>(tamanho, data e impressão digital de cada arquivo)"]
+  B --> C["Leitura e comparação<br/>das duas safras"]
+  C --> D["Aplicação do recorte<br/>(lista de ações, arquivo de entrada)"]
+  D --> E["Correção pela inflação<br/>(com trava no fator conferido)"]
+  E --> F["Somas: por ano, por período,<br/>por tipo de despesa, por ação"]
+  F --> G["Conferência contra os números publicados<br/>(tolerâncias definidas antes)"]
+  G --> H["Relatório em HTML<br/>e lista de divergências"]
+  classDef default fill:#e8f0fb,stroke:#2c64b0,color:#11243d
+```
+
+## As fontes e as duas safras
+
+Os dados vêm do sistema oficial de orçamento federal, extraídos em dois momentos diferentes. Cada extração é chamada aqui de **safra**: a mesma informação, colhida em datas diferentes.
+
+- A **safra antiga** cobre a União inteira, com órgão, programa e ação, mas o último ano está incompleto (a extração foi feita antes de o ano fechar).
+- A **safra nova** tem o último ano completo, mas a base da União vem só em totais por tipo de despesa, sem órgão.
+
+A conferência não escolhe uma safra às cegas. Ela compara as duas, ano a ano e fase a fase, e registra onde são idênticas e onde diferem. Nos dados reais, as duas safras são idênticas na maior parte dos anos; em alguns anos a safra nova tem linhas a mais, provavelmente porque o filtro do recorte cresceu entre uma extração e outra (inferido: a causa não foi confirmada com quem fez as extrações). Essa diferença não é corrigida em silêncio: vira uma linha do relatório de divergências, com a causa e o que fazer.
+
+Os dados sintéticos reproduzem esses fenômenos de propósito: anos idênticos, anos com linhas a mais na safra nova e o último ano incompleto na safra antiga.
+
+## As fases da despesa
+
+Cada valor aparece em seis fases, na ordem em que o dinheiro anda:
+
+| Fase | O que é |
+|---|---|
+| Projeto de lei | O valor que o governo propôs ao Congresso. |
+| Dotação inicial | O valor aprovado na lei do orçamento. |
+| Dotação atual | O valor autorizado depois dos créditos e cortes do ano. |
+| Empenho | A reserva do dinheiro para uma despesa contratada. |
+| Liquidação | A confirmação de que o serviço foi prestado ou o bem entregue. |
+| Pagamento | A saída efetiva do dinheiro. |
+
+## A correção pela inflação
+
+Para comparar anos diferentes, os valores são trazidos a preços de um mesmo mês (a **deflação**): cada valor é multiplicado pelo fator de correção do seu ano. O fator vem de uma tabela de entrada, não é calculado no código.
+
+Como um fator errado muda todos os números de um ano sem dar nenhum sinal, a conferência tem uma **trava**: antes de corrigir qualquer valor, ela confere o fator de um ano escolhido na configuração contra o valor certo, registrado ali, e se recusa a continuar se encontrar o valor errado conhecido. Na vitrine, o arquivo `dados_sinteticos/ipca_fatores_com_erro.csv` traz o fator errado, para quem quiser ver a trava funcionando.
+
+## O recorte entra pronto
+
+O **recorte** é a lista de ações orçamentárias que contam como política de juventude. Ele foi construído pela equipe do projeto com palavras-chave e com inclusões feitas à mão (ações que nenhuma palavra-chave pegaria, mas que a equipe decidiu incluir).
+
+A conferência **não refaz** esse filtro. Ela recebe a lista pronta, como arquivo de entrada (`entradas/recorte_acoes.csv`), e confere três coisas:
+
+1. a lista cobre todas as linhas da base usada;
+2. as ações obrigatórias (as inclusões à mão que não podem faltar) estão presentes;
+3. aplicar o recorte não perde nenhuma linha nas somas.
+
+Por que não refazer o filtro? Porque a base completa da União não tem os campos que o filtro original usa em parte dos anos. O relatório mostra isso com números: aplicar a lista de ações à base da União soma muito mais do que o recorte, porque há ações genéricas compartilhadas por vários programas; e mesmo cruzando programa e ação, a soma passa do recorte a partir de certo ano.
+
+## As conferências e a tolerância
+
+Cada número publicado que a conferência consegue recalcular vira uma linha de **gabarito** (`config/gabaritos.csv`): o que é, de onde veio, o valor esperado. A conferência calcula o mesmo número em R e compara.
+
+A **tolerância** (quanto de diferença ainda conta como "confere") foi definida **antes** de rodar a conferência sobre os dados reais, e não muda depois para fazer um número passar:
+
+- valores em reais: até R$ 1,00 de diferença por número;
+- percentuais: até cinco centésimos de ponto percentual;
+- contagens e listas: igualdade exata;
+- fatores de correção: sete casas decimais.
+
+Cada resultado recebe um de três status:
+
+- **confere**: dentro da tolerância;
+- **explicada**: fora da tolerância, com causa conhecida e verificada, registrada antes de rodar em `config/causas_conhecidas.yml` (o que for suposição aparece marcado como "inferido");
+- **diverge**: fora da tolerância e sem explicação. Vai para o autor decidir.
+
+Um valor dentro da tolerância nem sempre basta. Se um texto diz que o ápice de uma série foi em certo ano, conferir só o valor daquele ano pode dar "confere" mesmo que outro ano tenha um valor maior. Por isso o ano de maior participação tem gabarito próprio, comparado de forma exata.
+
+Além dos gabaritos, há checagens de estrutura, que não dependem de um número publicado: a soma das linhas bate com a soma por fase, as duas safras da União coincidem nos anos completos, o fator de inflação conferido é o certo.
+
+Na vitrine, os gabaritos são calculados pelo próprio script que inventa os dados, por um caminho independente do pipeline (só com o R básico). Se o pipeline chegar aos mesmos números, isso mostra que ele soma, corrige e filtra do jeito descrito aqui.
+
+## Os testes automáticos
+
+Além das conferências, o código tem **testes** (pacote `{testthat}`): pequenos programas que verificam se cada função faz o que promete. Alguns usam tabelas minúsculas montadas no próprio teste (por exemplo, se `"1.234,56"` vira o número 1234,56); outros leem os resultados do pipeline e confirmam as regras gerais. O comando que roda a conferência roda também os testes e para com erro se algum falhar.
+
+## Procedência
+
+Para cada arquivo de entrada, a conferência registra nome, tamanho, data de modificação e o **hash SHA-256**: uma espécie de impressão digital do arquivo, um código que muda por completo se um único caractere do arquivo mudar. Com isso, quem ler o relatório sabe exatamente quais arquivos foram usados, e quem quiser refazer a conta pode confirmar que tem os mesmos.
+
+## Checagem anti-vazamento
+
+Esta vitrine roda o mesmo código da conferência privada, e as duas ficam lado a lado no computador do autor. O risco é algum dado real passar para cá por descuido. Para impedir isso, o script `verificar_vazamento.R`:
+
+1. lê, **na hora**, a lista do que é proibido a partir da pasta privada: códigos e nomes das ações e programas do recorte, as palavras-chave do filtro, os números publicados e calculados, todos os fatores de correção da inflação, os números do capítulo de orçamento do relatório do projeto e os nomes das pessoas entrevistadas e da equipe. Os números entram em várias formas de escrever (com ponto, com vírgula, com separador de milhar, em bilhões e em milhões, percentuais com e sem o sinal de %). A lista nunca é copiada para a vitrine;
+2. confere se a pasta privada indicada é mesmo a certa: se as listas lidas forem pequenas demais, ela para;
+3. procura cada termo em todos os arquivos de texto que podem ir para o repositório, respeitando o começo e o fim das palavras e dos números, sem diferenciar maiúsculas de minúsculas nem acentos, e também em nomes partidos entre duas linhas. Procura ainda caminhos de pasta de usuário (`C:/Users/<nome>`) e endereços de e-mail;
+4. falha, mostrando arquivo, linha e termo, se encontrar qualquer coisa;
+5. se não conseguir ler a pasta privada ou algum arquivo (um arquivo que não é texto, por exemplo), avisa que **não checou** e falha também. Não checado nunca conta como aprovado.
+
+As exceções ficam listadas e explicadas em `config/vazamento.yml`, e a checagem mostra na tela as que estão em uso: três palavras genéricas que descrevem o tema ("juventude", "jovem" e "jovens"), permitidas em qualquer arquivo porque sozinhas não revelam nada do filtro; o nome do autor; e as pastas de bibliotecas de terceiros que o site inclui. As demais palavras-chave do recorte continuam proibidas em todo lugar.
+
+A checagem roda sozinha antes de cada *commit* (o registro de uma versão no git) e antes de cada *push* (o envio dos commits para o repositório na internet), por meio de *hooks* (scripts que o git executa automaticamente nesses momentos). No commit, ela confere exatamente o que vai ser registrado; no push, confere cada commit que vai ser enviado.
+
+## Limitações
+
+- Os dados sintéticos mostram que o método funciona; não dizem nada sobre o orçamento real.
+- A conferência confere contas, não escolhas: se o recorte deixou de fora uma ação que deveria estar lá, as somas vão conferir mesmo assim.
+- O último ano do denominador (o total do Executivo) é estimado, porque a safra nova não traz os órgãos.
+- A checagem anti-vazamento só pode ser rodada por quem tem a pasta privada. Ela procura termos exatos; uma paráfrase de um nome real não seria pega.

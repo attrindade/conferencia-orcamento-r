@@ -1,0 +1,107 @@
+[
+  {
+    "objectID": "metodo.html",
+    "href": "metodo.html",
+    "title": "Método",
+    "section": "",
+    "text": "A conferência é um pipeline: uma sequência de etapas em que cada uma recebe o resultado da anterior. Ela é montada com o pacote {targets}, que guarda o resultado de cada etapa e, quando algo muda (um arquivo de entrada, uma função), refaz só o que depende daquela mudança. Isso permite rodar tudo de novo com um único comando e saber exatamente o que foi recalculado.\n\n\n\n\n\nflowchart TD\n  A[\"Fontes oficiais&lt;br/&gt;(arquivos do sistema de orçamento)\"] --&gt; B[\"Registro de procedência&lt;br/&gt;(tamanho, data e impressão digital de cada arquivo)\"]\n  B --&gt; C[\"Leitura e comparação&lt;br/&gt;das duas safras\"]\n  C --&gt; D[\"Aplicação do recorte&lt;br/&gt;(lista de ações, arquivo de entrada)\"]\n  D --&gt; E[\"Correção pela inflação&lt;br/&gt;(com trava no fator conferido)\"]\n  E --&gt; F[\"Somas: por ano, por período,&lt;br/&gt;por tipo de despesa, por ação\"]\n  F --&gt; G[\"Conferência contra os números publicados&lt;br/&gt;(tolerâncias definidas antes)\"]\n  G --&gt; H[\"Relatório em HTML&lt;br/&gt;e lista de divergências\"]\n  classDef default fill:#e8f0fb,stroke:#2c64b0,color:#11243d"
+  },
+  {
+    "objectID": "metodo.html#visão-geral",
+    "href": "metodo.html#visão-geral",
+    "title": "Método",
+    "section": "",
+    "text": "A conferência é um pipeline: uma sequência de etapas em que cada uma recebe o resultado da anterior. Ela é montada com o pacote {targets}, que guarda o resultado de cada etapa e, quando algo muda (um arquivo de entrada, uma função), refaz só o que depende daquela mudança. Isso permite rodar tudo de novo com um único comando e saber exatamente o que foi recalculado.\n\n\n\n\n\nflowchart TD\n  A[\"Fontes oficiais&lt;br/&gt;(arquivos do sistema de orçamento)\"] --&gt; B[\"Registro de procedência&lt;br/&gt;(tamanho, data e impressão digital de cada arquivo)\"]\n  B --&gt; C[\"Leitura e comparação&lt;br/&gt;das duas safras\"]\n  C --&gt; D[\"Aplicação do recorte&lt;br/&gt;(lista de ações, arquivo de entrada)\"]\n  D --&gt; E[\"Correção pela inflação&lt;br/&gt;(com trava no fator conferido)\"]\n  E --&gt; F[\"Somas: por ano, por período,&lt;br/&gt;por tipo de despesa, por ação\"]\n  F --&gt; G[\"Conferência contra os números publicados&lt;br/&gt;(tolerâncias definidas antes)\"]\n  G --&gt; H[\"Relatório em HTML&lt;br/&gt;e lista de divergências\"]\n  classDef default fill:#e8f0fb,stroke:#2c64b0,color:#11243d"
+  },
+  {
+    "objectID": "metodo.html#as-fontes-e-as-duas-safras",
+    "href": "metodo.html#as-fontes-e-as-duas-safras",
+    "title": "Método",
+    "section": "As fontes e as duas safras",
+    "text": "As fontes e as duas safras\nOs dados vêm do sistema oficial de orçamento federal, extraídos em dois momentos diferentes. Cada extração é chamada aqui de safra: a mesma informação, colhida em datas diferentes.\n\nA safra antiga cobre a União inteira, com órgão, programa e ação, mas o último ano está incompleto (a extração foi feita antes de o ano fechar).\nA safra nova tem o último ano completo, mas a base da União vem só em totais por tipo de despesa, sem órgão.\n\nA conferência não escolhe uma safra às cegas. Ela compara as duas, ano a ano e fase a fase, e registra onde são idênticas e onde diferem. Nos dados reais, as duas safras são idênticas na maior parte dos anos; em alguns anos a safra nova tem linhas a mais, provavelmente porque o filtro do recorte cresceu entre uma extração e outra (inferido: a causa não foi confirmada com quem fez as extrações). Essa diferença não é corrigida em silêncio: vira uma linha do relatório de divergências, com a causa e o que fazer.\nOs dados sintéticos reproduzem esses fenômenos de propósito: anos idênticos, anos com linhas a mais na safra nova e o último ano incompleto na safra antiga."
+  },
+  {
+    "objectID": "metodo.html#as-fases-da-despesa",
+    "href": "metodo.html#as-fases-da-despesa",
+    "title": "Método",
+    "section": "As fases da despesa",
+    "text": "As fases da despesa\nCada valor aparece em seis fases, na ordem em que o dinheiro anda:\n\n\n\n\n\n\n\nFase\nO que é\n\n\n\n\nProjeto de lei\nO valor que o governo propôs ao Congresso.\n\n\nDotação inicial\nO valor aprovado na lei do orçamento.\n\n\nDotação atual\nO valor autorizado depois dos créditos e cortes do ano.\n\n\nEmpenho\nA reserva do dinheiro para uma despesa contratada.\n\n\nLiquidação\nA confirmação de que o serviço foi prestado ou o bem entregue.\n\n\nPagamento\nA saída efetiva do dinheiro."
+  },
+  {
+    "objectID": "metodo.html#a-correção-pela-inflação",
+    "href": "metodo.html#a-correção-pela-inflação",
+    "title": "Método",
+    "section": "A correção pela inflação",
+    "text": "A correção pela inflação\nPara comparar anos diferentes, os valores são trazidos a preços de um mesmo mês (a deflação): cada valor é multiplicado pelo fator de correção do seu ano. O fator vem de uma tabela de entrada, não é calculado no código.\nComo um fator errado muda todos os números de um ano sem dar nenhum sinal, a conferência tem uma trava: antes de corrigir qualquer valor, ela confere o fator de um ano escolhido na configuração contra o valor certo, registrado ali, e se recusa a continuar se encontrar o valor errado conhecido. Na vitrine, o arquivo dados_sinteticos/ipca_fatores_com_erro.csv traz o fator errado, para quem quiser ver a trava funcionando."
+  },
+  {
+    "objectID": "metodo.html#o-recorte-entra-pronto",
+    "href": "metodo.html#o-recorte-entra-pronto",
+    "title": "Método",
+    "section": "O recorte entra pronto",
+    "text": "O recorte entra pronto\nO recorte é a lista de ações orçamentárias que contam como política de juventude. Ele foi construído pela equipe do projeto com palavras-chave e com inclusões feitas à mão (ações que nenhuma palavra-chave pegaria, mas que a equipe decidiu incluir).\nA conferência não refaz esse filtro. Ela recebe a lista pronta, como arquivo de entrada (entradas/recorte_acoes.csv), e confere três coisas:\n\na lista cobre todas as linhas da base usada;\nas ações obrigatórias (as inclusões à mão que não podem faltar) estão presentes;\naplicar o recorte não perde nenhuma linha nas somas.\n\nPor que não refazer o filtro? Porque a base completa da União não tem os campos que o filtro original usa em parte dos anos. O relatório mostra isso com números: aplicar a lista de ações à base da União soma muito mais do que o recorte, porque há ações genéricas compartilhadas por vários programas; e mesmo cruzando programa e ação, a soma passa do recorte a partir de certo ano."
+  },
+  {
+    "objectID": "metodo.html#as-conferências-e-a-tolerância",
+    "href": "metodo.html#as-conferências-e-a-tolerância",
+    "title": "Método",
+    "section": "As conferências e a tolerância",
+    "text": "As conferências e a tolerância\nCada número publicado que a conferência consegue recalcular vira uma linha de gabarito (config/gabaritos.csv): o que é, de onde veio, o valor esperado. A conferência calcula o mesmo número em R e compara.\nA tolerância (quanto de diferença ainda conta como “confere”) foi definida antes de rodar a conferência sobre os dados reais, e não muda depois para fazer um número passar:\n\nvalores em reais: até R$ 1,00 de diferença por número;\npercentuais: até cinco centésimos de ponto percentual;\ncontagens e listas: igualdade exata;\nfatores de correção: sete casas decimais.\n\nCada resultado recebe um de três status:\n\nconfere: dentro da tolerância;\nexplicada: fora da tolerância, com causa conhecida e verificada, registrada antes de rodar em config/causas_conhecidas.yml (o que for suposição aparece marcado como “inferido”);\ndiverge: fora da tolerância e sem explicação. Vai para o autor decidir.\n\nUm valor dentro da tolerância nem sempre basta. Se um texto diz que o ápice de uma série foi em certo ano, conferir só o valor daquele ano pode dar “confere” mesmo que outro ano tenha um valor maior. Por isso o ano de maior participação tem gabarito próprio, comparado de forma exata.\nAlém dos gabaritos, há checagens de estrutura, que não dependem de um número publicado: a soma das linhas bate com a soma por fase, as duas safras da União coincidem nos anos completos, o fator de inflação conferido é o certo.\nNa vitrine, os gabaritos são calculados pelo próprio script que inventa os dados, por um caminho independente do pipeline (só com o R básico). Se o pipeline chegar aos mesmos números, isso mostra que ele soma, corrige e filtra do jeito descrito aqui."
+  },
+  {
+    "objectID": "metodo.html#os-testes-automáticos",
+    "href": "metodo.html#os-testes-automáticos",
+    "title": "Método",
+    "section": "Os testes automáticos",
+    "text": "Os testes automáticos\nAlém das conferências, o código tem testes (pacote {testthat}): pequenos programas que verificam se cada função faz o que promete. Alguns usam tabelas minúsculas montadas no próprio teste (por exemplo, se \"1.234,56\" vira o número 1234,56); outros leem os resultados do pipeline e confirmam as regras gerais. O comando que roda a conferência roda também os testes e para com erro se algum falhar."
+  },
+  {
+    "objectID": "metodo.html#procedência",
+    "href": "metodo.html#procedência",
+    "title": "Método",
+    "section": "Procedência",
+    "text": "Procedência\nPara cada arquivo de entrada, a conferência registra nome, tamanho, data de modificação e o hash SHA-256: uma espécie de impressão digital do arquivo, um código que muda por completo se um único caractere do arquivo mudar. Com isso, quem ler o relatório sabe exatamente quais arquivos foram usados, e quem quiser refazer a conta pode confirmar que tem os mesmos."
+  },
+  {
+    "objectID": "metodo.html#checagem-anti-vazamento",
+    "href": "metodo.html#checagem-anti-vazamento",
+    "title": "Método",
+    "section": "Checagem anti-vazamento",
+    "text": "Checagem anti-vazamento\nEsta vitrine roda o mesmo código da conferência privada, e as duas ficam lado a lado no computador do autor. O risco é algum dado real passar para cá por descuido. Para impedir isso, o script verificar_vazamento.R:\n\nlê, na hora, a lista do que é proibido a partir da pasta privada: códigos e nomes das ações e programas do recorte, as palavras-chave do filtro, os números publicados e calculados, todos os fatores de correção da inflação, os números do capítulo de orçamento do relatório do projeto e os nomes das pessoas entrevistadas e da equipe. Os números entram em várias formas de escrever (com ponto, com vírgula, com separador de milhar, em bilhões e em milhões, percentuais com e sem o sinal de %). A lista nunca é copiada para a vitrine;\nconfere se a pasta privada indicada é mesmo a certa: se as listas lidas forem pequenas demais, ela para;\nprocura cada termo em todos os arquivos de texto que podem ir para o repositório, respeitando o começo e o fim das palavras e dos números, sem diferenciar maiúsculas de minúsculas nem acentos, e também em nomes partidos entre duas linhas. Procura ainda caminhos de pasta de usuário (C:/Users/&lt;nome&gt;) e endereços de e-mail;\nfalha, mostrando arquivo, linha e termo, se encontrar qualquer coisa;\nse não conseguir ler a pasta privada ou algum arquivo (um arquivo que não é texto, por exemplo), avisa que não checou e falha também. Não checado nunca conta como aprovado.\n\nAs exceções ficam listadas e explicadas em config/vazamento.yml, e a checagem mostra na tela as que estão em uso: três palavras genéricas que descrevem o tema (“juventude”, “jovem” e “jovens”), permitidas em qualquer arquivo porque sozinhas não revelam nada do filtro; o nome do autor; e as pastas de bibliotecas de terceiros que o site inclui. As demais palavras-chave do recorte continuam proibidas em todo lugar.\nA checagem roda sozinha antes de cada commit (o registro de uma versão no git) e antes de cada push (o envio dos commits para o repositório na internet), por meio de hooks (scripts que o git executa automaticamente nesses momentos). No commit, ela confere exatamente o que vai ser registrado; no push, confere cada commit que vai ser enviado."
+  },
+  {
+    "objectID": "metodo.html#limitações",
+    "href": "metodo.html#limitações",
+    "title": "Método",
+    "section": "Limitações",
+    "text": "Limitações\n\nOs dados sintéticos mostram que o método funciona; não dizem nada sobre o orçamento real.\nA conferência confere contas, não escolhas: se o recorte deixou de fora uma ação que deveria estar lá, as somas vão conferir mesmo assim.\nO último ano do denominador (o total do Executivo) é estimado, porque a safra nova não traz os órgãos.\nA checagem anti-vazamento só pode ser rodada por quem tem a pasta privada. Ela procura termos exatos; uma paráfrase de um nome real não seria pega."
+  },
+  {
+    "objectID": "index.html",
+    "href": "index.html",
+    "title": "Conferência independente do orçamento, em R",
+    "section": "",
+    "text": "Este repositório mostra como foi feita a conferência dos números de orçamento federal de juventude que o Instituto Cíclica publicou no projeto PPJ (20 anos da política federal de juventude). A conferência refaz as contas em R, por um caminho diferente do usado para produzir os números, e compara cada resultado com o valor publicado.\nAqui o código roda sobre dados sintéticos: arquivos inventados que têm exatamente o mesmo formato das fontes reais (mesmas colunas, separadores e jeito de escrever números), mas com órgãos, programas, ações e valores fictícios. Assim qualquer pessoa pode rodar, ler e criticar o método sem acesso aos dados do projeto."
+  },
+  {
+    "objectID": "index.html#o-que-é",
+    "href": "index.html#o-que-é",
+    "title": "Conferência independente do orçamento, em R",
+    "section": "",
+    "text": "Este repositório mostra como foi feita a conferência dos números de orçamento federal de juventude que o Instituto Cíclica publicou no projeto PPJ (20 anos da política federal de juventude). A conferência refaz as contas em R, por um caminho diferente do usado para produzir os números, e compara cada resultado com o valor publicado.\nAqui o código roda sobre dados sintéticos: arquivos inventados que têm exatamente o mesmo formato das fontes reais (mesmas colunas, separadores e jeito de escrever números), mas com órgãos, programas, ações e valores fictícios. Assim qualquer pessoa pode rodar, ler e criticar o método sem acesso aos dados do projeto."
+  },
+  {
+    "objectID": "index.html#por-que-existe",
+    "href": "index.html#por-que-existe",
+    "title": "Conferência independente do orçamento, em R",
+    "section": "Por que existe",
+    "text": "Por que existe\nNúmeros de orçamento passam por muitas etapas até chegar a um relatório: extração do sistema oficial, filtro do que conta como política de juventude, correção pela inflação, somas por ano e por tipo de despesa. Um erro em qualquer etapa muda o resultado sem deixar rastro visível. Um fator de correção da inflação errado em um único ano, por exemplo, muda todos os valores daquele ano e passa despercebido se ninguém refizer a conta.\nEsta conferência existe para que esse tipo de erro seja pego por uma rotina que qualquer pessoa pode repetir, e não pela sorte de alguém revisar a conta certa."
+  },
+  {
+    "objectID": "index.html#o-que-você-encontra-aqui",
+    "href": "index.html#o-que-você-encontra-aqui",
+    "title": "Conferência independente do orçamento, em R",
+    "section": "O que você encontra aqui",
+    "text": "O que você encontra aqui\n\nMétodo: como a conferência funciona, etapa por etapa, em linguagem simples.\nRelatório de exemplo: o relatório que a conferência gera, aqui sobre os dados sintéticos. Mostra o veredito, cada checagem e a procedência dos arquivos, sem precisar instalar R nem Quarto.\nO código (no repositório, em https://github.com/attrindade/conferencia-orcamento-r): os scripts em R, os testes automáticos e o modelo do relatório.\nOs dados sintéticos (pasta dados_sinteticos/): gerados por um script com semente fixa, ou seja, quem rodar de novo obtém exatamente os mesmos arquivos.\n\n\n\n\n\n\n\nNotaSobre os números desta vitrine\n\n\n\nNenhum valor, código ou nome que aparece aqui é do orçamento real. Os dados reais e os números publicados ficam em uma pasta privada; uma checagem automática impede que qualquer um deles chegue a este repositório (veja a seção “Checagem anti-vazamento” em Método)."
+  }
+]

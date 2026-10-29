@@ -1,0 +1,10 @@
+acao_cod,acao_nome,programas,origem,primeiro_ano,ultimo_ano,n_linhas
+ZA01,Bolsas Fictícias Aurora,Z101,palavra-chave,2005,2025,63
+ZA02,Centros Comunitários Fictícios,Z101,palavra-chave,2005,2025,42
+ZA03,"Apoio Fictício a Projetos Locais, Redes e Coletivos",Z102,palavra-chave,2005,2025,63
+ZA04,Esporte Comunitário Fictício,Z103,palavra-chave,2005,2025,42
+ZA05,Atendimento Integrado Fictício,Z102|Z104,palavra-chave,2005,2025,42
+ZD01,Proteção Social Fictícia,Z103,palavra-chave,2008,2011,8
+ZG01,Custeio Fictício Bússola,Z101,palavra-chave,2005,2025,21
+ZM01,Oficinas Fictícias de Música Ipê,Z199,inclusão manual,2017,2022,12
+ZM02,Ação Fictícia Incluída à Mão,Z199,inclusão manual,2008,2011,8

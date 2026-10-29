@@ -1,0 +1,204 @@
+id,descricao,fonte,metrica,fase,ano,filtro,unidade,valor_esperado,observacao
+total_ano_projeto_lei_2005,"Total do recorte em 2005, projeto_lei, em reais de 2025",scripts/gerar_dados_sinteticos.R (verdade sintética),total_ano,projeto_lei,2005,,reais,72266426.04,
+total_ano_projeto_lei_2006,"Total do recorte em 2006, projeto_lei, em reais de 2025",scripts/gerar_dados_sinteticos.R (verdade sintética),total_ano,projeto_lei,2006,,reais,94461791.85,
+total_ano_projeto_lei_2007,"Total do recorte em 2007, projeto_lei, em reais de 2025",scripts/gerar_dados_sinteticos.R (verdade sintética),total_ano,projeto_lei,2007,,reais,74308007.30,
+total_ano_projeto_lei_2008,"Total do recorte em 2008, projeto_lei, em reais de 2025",scripts/gerar_dados_sinteticos.R (verdade sintética),total_ano,projeto_lei,2008,,reais,132932455.87,
+total_ano_projeto_lei_2009,"Total do recorte em 2009, projeto_lei, em reais de 2025",scripts/gerar_dados_sinteticos.R (verdade sintética),total_ano,projeto_lei,2009,,reais,145881837.96,
+total_ano_projeto_lei_2010,"Total do recorte em 2010, projeto_lei, em reais de 2025",scripts/gerar_dados_sinteticos.R (verdade sintética),total_ano,projeto_lei,2010,,reais,58050429.98,
+total_ano_projeto_lei_2011,"Total do recorte em 2011, projeto_lei, em reais de 2025",scripts/gerar_dados_sinteticos.R (verdade sintética),total_ano,projeto_lei,2011,,reais,54148157.83,
+total_ano_projeto_lei_2012,"Total do recorte em 2012, projeto_lei, em reais de 2025",scripts/gerar_dados_sinteticos.R (verdade sintética),total_ano,projeto_lei,2012,,reais,64925316.39,
+total_ano_projeto_lei_2013,"Total do recorte em 2013, projeto_lei, em reais de 2025",scripts/gerar_dados_sinteticos.R (verdade sintética),total_ano,projeto_lei,2013,,reais,91342018.25,
+total_ano_projeto_lei_2014,"Total do recorte em 2014, projeto_lei, em reais de 2025",scripts/gerar_dados_sinteticos.R (verdade sintética),total_ano,projeto_lei,2014,,reais,116084120.97,
+total_ano_projeto_lei_2015,"Total do recorte em 2015, projeto_lei, em reais de 2025",scripts/gerar_dados_sinteticos.R (verdade sintética),total_ano,projeto_lei,2015,,reais,69935781.13,
+total_ano_projeto_lei_2016,"Total do recorte em 2016, projeto_lei, em reais de 2025",scripts/gerar_dados_sinteticos.R (verdade sintética),total_ano,projeto_lei,2016,,reais,88403086.05,
+total_ano_projeto_lei_2017,"Total do recorte em 2017, projeto_lei, em reais de 2025",scripts/gerar_dados_sinteticos.R (verdade sintética),total_ano,projeto_lei,2017,,reais,58038384.30,
+total_ano_projeto_lei_2018,"Total do recorte em 2018, projeto_lei, em reais de 2025",scripts/gerar_dados_sinteticos.R (verdade sintética),total_ano,projeto_lei,2018,,reais,132801751.70,
+total_ano_projeto_lei_2019,"Total do recorte em 2019, projeto_lei, em reais de 2025",scripts/gerar_dados_sinteticos.R (verdade sintética),total_ano,projeto_lei,2019,,reais,111735543.25,
+total_ano_projeto_lei_2020,"Total do recorte em 2020, projeto_lei, em reais de 2025",scripts/gerar_dados_sinteticos.R (verdade sintética),total_ano,projeto_lei,2020,,reais,110546628.42,
+total_ano_projeto_lei_2021,"Total do recorte em 2021, projeto_lei, em reais de 2025",scripts/gerar_dados_sinteticos.R (verdade sintética),total_ano,projeto_lei,2021,,reais,64329251.89,
+total_ano_projeto_lei_2022,"Total do recorte em 2022, projeto_lei, em reais de 2025",scripts/gerar_dados_sinteticos.R (verdade sintética),total_ano,projeto_lei,2022,,reais,82682503.12,
+total_ano_projeto_lei_2023,"Total do recorte em 2023, projeto_lei, em reais de 2025",scripts/gerar_dados_sinteticos.R (verdade sintética),total_ano,projeto_lei,2023,,reais,87899945.87,
+total_ano_projeto_lei_2024,"Total do recorte em 2024, projeto_lei, em reais de 2025",scripts/gerar_dados_sinteticos.R (verdade sintética),total_ano,projeto_lei,2024,,reais,144506479.15,
+total_ano_projeto_lei_2025,"Total do recorte em 2025, projeto_lei, em reais de 2025",scripts/gerar_dados_sinteticos.R (verdade sintética),total_ano,projeto_lei,2025,,reais,77377585.00,
+total_ano_dotacao_inicial_2005,"Total do recorte em 2005, dotacao_inicial, em reais de 2025",scripts/gerar_dados_sinteticos.R (verdade sintética),total_ano,dotacao_inicial,2005,,reais,71462616.94,
+total_ano_dotacao_inicial_2006,"Total do recorte em 2006, dotacao_inicial, em reais de 2025",scripts/gerar_dados_sinteticos.R (verdade sintética),total_ano,dotacao_inicial,2006,,reais,93920989.82,
+total_ano_dotacao_inicial_2007,"Total do recorte em 2007, dotacao_inicial, em reais de 2025",scripts/gerar_dados_sinteticos.R (verdade sintética),total_ano,dotacao_inicial,2007,,reais,74231667.59,
+total_ano_dotacao_inicial_2008,"Total do recorte em 2008, dotacao_inicial, em reais de 2025",scripts/gerar_dados_sinteticos.R (verdade sintética),total_ano,dotacao_inicial,2008,,reais,133142097.37,
+total_ano_dotacao_inicial_2009,"Total do recorte em 2009, dotacao_inicial, em reais de 2025",scripts/gerar_dados_sinteticos.R (verdade sintética),total_ano,dotacao_inicial,2009,,reais,145989975.55,
+total_ano_dotacao_inicial_2010,"Total do recorte em 2010, dotacao_inicial, em reais de 2025",scripts/gerar_dados_sinteticos.R (verdade sintética),total_ano,dotacao_inicial,2010,,reais,57960482.21,
+total_ano_dotacao_inicial_2011,"Total do recorte em 2011, dotacao_inicial, em reais de 2025",scripts/gerar_dados_sinteticos.R (verdade sintética),total_ano,dotacao_inicial,2011,,reais,53908876.75,
+total_ano_dotacao_inicial_2012,"Total do recorte em 2012, dotacao_inicial, em reais de 2025",scripts/gerar_dados_sinteticos.R (verdade sintética),total_ano,dotacao_inicial,2012,,reais,65201388.50,
+total_ano_dotacao_inicial_2013,"Total do recorte em 2013, dotacao_inicial, em reais de 2025",scripts/gerar_dados_sinteticos.R (verdade sintética),total_ano,dotacao_inicial,2013,,reais,90263639.65,
+total_ano_dotacao_inicial_2014,"Total do recorte em 2014, dotacao_inicial, em reais de 2025",scripts/gerar_dados_sinteticos.R (verdade sintética),total_ano,dotacao_inicial,2014,,reais,115618909.52,
+total_ano_dotacao_inicial_2015,"Total do recorte em 2015, dotacao_inicial, em reais de 2025",scripts/gerar_dados_sinteticos.R (verdade sintética),total_ano,dotacao_inicial,2015,,reais,69718176.53,
+total_ano_dotacao_inicial_2016,"Total do recorte em 2016, dotacao_inicial, em reais de 2025",scripts/gerar_dados_sinteticos.R (verdade sintética),total_ano,dotacao_inicial,2016,,reais,88001846.26,
+total_ano_dotacao_inicial_2017,"Total do recorte em 2017, dotacao_inicial, em reais de 2025",scripts/gerar_dados_sinteticos.R (verdade sintética),total_ano,dotacao_inicial,2017,,reais,57981434.03,
+total_ano_dotacao_inicial_2018,"Total do recorte em 2018, dotacao_inicial, em reais de 2025",scripts/gerar_dados_sinteticos.R (verdade sintética),total_ano,dotacao_inicial,2018,,reais,132958714.65,
+total_ano_dotacao_inicial_2019,"Total do recorte em 2019, dotacao_inicial, em reais de 2025",scripts/gerar_dados_sinteticos.R (verdade sintética),total_ano,dotacao_inicial,2019,,reais,112298465.58,
+total_ano_dotacao_inicial_2020,"Total do recorte em 2020, dotacao_inicial, em reais de 2025",scripts/gerar_dados_sinteticos.R (verdade sintética),total_ano,dotacao_inicial,2020,,reais,109940787.71,
+total_ano_dotacao_inicial_2021,"Total do recorte em 2021, dotacao_inicial, em reais de 2025",scripts/gerar_dados_sinteticos.R (verdade sintética),total_ano,dotacao_inicial,2021,,reais,64434397.86,
+total_ano_dotacao_inicial_2022,"Total do recorte em 2022, dotacao_inicial, em reais de 2025",scripts/gerar_dados_sinteticos.R (verdade sintética),total_ano,dotacao_inicial,2022,,reais,83467479.98,
+total_ano_dotacao_inicial_2023,"Total do recorte em 2023, dotacao_inicial, em reais de 2025",scripts/gerar_dados_sinteticos.R (verdade sintética),total_ano,dotacao_inicial,2023,,reais,87937366.24,
+total_ano_dotacao_inicial_2024,"Total do recorte em 2024, dotacao_inicial, em reais de 2025",scripts/gerar_dados_sinteticos.R (verdade sintética),total_ano,dotacao_inicial,2024,,reais,144988461.79,
+total_ano_dotacao_inicial_2025,"Total do recorte em 2025, dotacao_inicial, em reais de 2025",scripts/gerar_dados_sinteticos.R (verdade sintética),total_ano,dotacao_inicial,2025,,reais,77399221.00,
+total_ano_dotacao_atual_2005,"Total do recorte em 2005, dotacao_atual, em reais de 2025",scripts/gerar_dados_sinteticos.R (verdade sintética),total_ano,dotacao_atual,2005,,reais,75869456.98,
+total_ano_dotacao_atual_2006,"Total do recorte em 2006, dotacao_atual, em reais de 2025",scripts/gerar_dados_sinteticos.R (verdade sintética),total_ano,dotacao_atual,2006,,reais,97558469.44,
+total_ano_dotacao_atual_2007,"Total do recorte em 2007, dotacao_atual, em reais de 2025",scripts/gerar_dados_sinteticos.R (verdade sintética),total_ano,dotacao_atual,2007,,reais,78807670.01,
+total_ano_dotacao_atual_2008,"Total do recorte em 2008, dotacao_atual, em reais de 2025",scripts/gerar_dados_sinteticos.R (verdade sintética),total_ano,dotacao_atual,2008,,reais,139026709.12,
+total_ano_dotacao_atual_2009,"Total do recorte em 2009, dotacao_atual, em reais de 2025",scripts/gerar_dados_sinteticos.R (verdade sintética),total_ano,dotacao_atual,2009,,reais,161297932.16,
+total_ano_dotacao_atual_2010,"Total do recorte em 2010, dotacao_atual, em reais de 2025",scripts/gerar_dados_sinteticos.R (verdade sintética),total_ano,dotacao_atual,2010,,reais,61754201.69,
+total_ano_dotacao_atual_2011,"Total do recorte em 2011, dotacao_atual, em reais de 2025",scripts/gerar_dados_sinteticos.R (verdade sintética),total_ano,dotacao_atual,2011,,reais,57192245.43,
+total_ano_dotacao_atual_2012,"Total do recorte em 2012, dotacao_atual, em reais de 2025",scripts/gerar_dados_sinteticos.R (verdade sintética),total_ano,dotacao_atual,2012,,reais,69897894.20,
+total_ano_dotacao_atual_2013,"Total do recorte em 2013, dotacao_atual, em reais de 2025",scripts/gerar_dados_sinteticos.R (verdade sintética),total_ano,dotacao_atual,2013,,reais,96563945.49,
+total_ano_dotacao_atual_2014,"Total do recorte em 2014, dotacao_atual, em reais de 2025",scripts/gerar_dados_sinteticos.R (verdade sintética),total_ano,dotacao_atual,2014,,reais,121496585.48,
+total_ano_dotacao_atual_2015,"Total do recorte em 2015, dotacao_atual, em reais de 2025",scripts/gerar_dados_sinteticos.R (verdade sintética),total_ano,dotacao_atual,2015,,reais,73112165.90,
+total_ano_dotacao_atual_2016,"Total do recorte em 2016, dotacao_atual, em reais de 2025",scripts/gerar_dados_sinteticos.R (verdade sintética),total_ano,dotacao_atual,2016,,reais,89564339.16,
+total_ano_dotacao_atual_2017,"Total do recorte em 2017, dotacao_atual, em reais de 2025",scripts/gerar_dados_sinteticos.R (verdade sintética),total_ano,dotacao_atual,2017,,reais,60529410.13,
+total_ano_dotacao_atual_2018,"Total do recorte em 2018, dotacao_atual, em reais de 2025",scripts/gerar_dados_sinteticos.R (verdade sintética),total_ano,dotacao_atual,2018,,reais,143282539.94,
+total_ano_dotacao_atual_2019,"Total do recorte em 2019, dotacao_atual, em reais de 2025",scripts/gerar_dados_sinteticos.R (verdade sintética),total_ano,dotacao_atual,2019,,reais,119571311.99,
+total_ano_dotacao_atual_2020,"Total do recorte em 2020, dotacao_atual, em reais de 2025",scripts/gerar_dados_sinteticos.R (verdade sintética),total_ano,dotacao_atual,2020,,reais,116939074.60,
+total_ano_dotacao_atual_2021,"Total do recorte em 2021, dotacao_atual, em reais de 2025",scripts/gerar_dados_sinteticos.R (verdade sintética),total_ano,dotacao_atual,2021,,reais,66364185.66,
+total_ano_dotacao_atual_2022,"Total do recorte em 2022, dotacao_atual, em reais de 2025",scripts/gerar_dados_sinteticos.R (verdade sintética),total_ano,dotacao_atual,2022,,reais,87215345.31,
+total_ano_dotacao_atual_2023,"Total do recorte em 2023, dotacao_atual, em reais de 2025",scripts/gerar_dados_sinteticos.R (verdade sintética),total_ano,dotacao_atual,2023,,reais,90270731.43,
+total_ano_dotacao_atual_2024,"Total do recorte em 2024, dotacao_atual, em reais de 2025",scripts/gerar_dados_sinteticos.R (verdade sintética),total_ano,dotacao_atual,2024,,reais,149106458.45,
+total_ano_dotacao_atual_2025,"Total do recorte em 2025, dotacao_atual, em reais de 2025",scripts/gerar_dados_sinteticos.R (verdade sintética),total_ano,dotacao_atual,2025,,reais,84056791.00,
+total_ano_empenhado_2005,"Total do recorte em 2005, empenhado, em reais de 2025",scripts/gerar_dados_sinteticos.R (verdade sintética),total_ano,empenhado,2005,,reais,67309137.37,
+total_ano_empenhado_2006,"Total do recorte em 2006, empenhado, em reais de 2025",scripts/gerar_dados_sinteticos.R (verdade sintética),total_ano,empenhado,2006,,reais,81019785.62,
+total_ano_empenhado_2007,"Total do recorte em 2007, empenhado, em reais de 2025",scripts/gerar_dados_sinteticos.R (verdade sintética),total_ano,empenhado,2007,,reais,63551815.58,
+total_ano_empenhado_2008,"Total do recorte em 2008, empenhado, em reais de 2025",scripts/gerar_dados_sinteticos.R (verdade sintética),total_ano,empenhado,2008,,reais,112669335.43,
+total_ano_empenhado_2009,"Total do recorte em 2009, empenhado, em reais de 2025",scripts/gerar_dados_sinteticos.R (verdade sintética),total_ano,empenhado,2009,,reais,133494224.43,
+total_ano_empenhado_2010,"Total do recorte em 2010, empenhado, em reais de 2025",scripts/gerar_dados_sinteticos.R (verdade sintética),total_ano,empenhado,2010,,reais,52865286.40,
+total_ano_empenhado_2011,"Total do recorte em 2011, empenhado, em reais de 2025",scripts/gerar_dados_sinteticos.R (verdade sintética),total_ano,empenhado,2011,,reais,49692449.97,
+total_ano_empenhado_2012,"Total do recorte em 2012, empenhado, em reais de 2025",scripts/gerar_dados_sinteticos.R (verdade sintética),total_ano,empenhado,2012,,reais,59955146.02,
+total_ano_empenhado_2013,"Total do recorte em 2013, empenhado, em reais de 2025",scripts/gerar_dados_sinteticos.R (verdade sintética),total_ano,empenhado,2013,,reais,81041127.41,
+total_ano_empenhado_2014,"Total do recorte em 2014, empenhado, em reais de 2025",scripts/gerar_dados_sinteticos.R (verdade sintética),total_ano,empenhado,2014,,reais,106405258.71,
+total_ano_empenhado_2015,"Total do recorte em 2015, empenhado, em reais de 2025",scripts/gerar_dados_sinteticos.R (verdade sintética),total_ano,empenhado,2015,,reais,61029729.76,
+total_ano_empenhado_2016,"Total do recorte em 2016, empenhado, em reais de 2025",scripts/gerar_dados_sinteticos.R (verdade sintética),total_ano,empenhado,2016,,reais,79133694.02,
+total_ano_empenhado_2017,"Total do recorte em 2017, empenhado, em reais de 2025",scripts/gerar_dados_sinteticos.R (verdade sintética),total_ano,empenhado,2017,,reais,52202298.47,
+total_ano_empenhado_2018,"Total do recorte em 2018, empenhado, em reais de 2025",scripts/gerar_dados_sinteticos.R (verdade sintética),total_ano,empenhado,2018,,reais,118648329.69,
+total_ano_empenhado_2019,"Total do recorte em 2019, empenhado, em reais de 2025",scripts/gerar_dados_sinteticos.R (verdade sintética),total_ano,empenhado,2019,,reais,100797983.98,
+total_ano_empenhado_2020,"Total do recorte em 2020, empenhado, em reais de 2025",scripts/gerar_dados_sinteticos.R (verdade sintética),total_ano,empenhado,2020,,reais,102593695.46,
+total_ano_empenhado_2021,"Total do recorte em 2021, empenhado, em reais de 2025",scripts/gerar_dados_sinteticos.R (verdade sintética),total_ano,empenhado,2021,,reais,56183853.60,
+total_ano_empenhado_2022,"Total do recorte em 2022, empenhado, em reais de 2025",scripts/gerar_dados_sinteticos.R (verdade sintética),total_ano,empenhado,2022,,reais,73116063.31,
+total_ano_empenhado_2023,"Total do recorte em 2023, empenhado, em reais de 2025",scripts/gerar_dados_sinteticos.R (verdade sintética),total_ano,empenhado,2023,,reais,76777378.34,
+total_ano_empenhado_2024,"Total do recorte em 2024, empenhado, em reais de 2025",scripts/gerar_dados_sinteticos.R (verdade sintética),total_ano,empenhado,2024,,reais,123864036.43,
+total_ano_empenhado_2025,"Total do recorte em 2025, empenhado, em reais de 2025",scripts/gerar_dados_sinteticos.R (verdade sintética),total_ano,empenhado,2025,,reais,69912918.00,
+total_ano_liquidado_2005,"Total do recorte em 2005, liquidado, em reais de 2025",scripts/gerar_dados_sinteticos.R (verdade sintética),total_ano,liquidado,2005,,reais,62272127.82,
+total_ano_liquidado_2006,"Total do recorte em 2006, liquidado, em reais de 2025",scripts/gerar_dados_sinteticos.R (verdade sintética),total_ano,liquidado,2006,,reais,74447199.00,
+total_ano_liquidado_2007,"Total do recorte em 2007, liquidado, em reais de 2025",scripts/gerar_dados_sinteticos.R (verdade sintética),total_ano,liquidado,2007,,reais,57702875.39,
+total_ano_liquidado_2008,"Total do recorte em 2008, liquidado, em reais de 2025",scripts/gerar_dados_sinteticos.R (verdade sintética),total_ano,liquidado,2008,,reais,106145351.18,
+total_ano_liquidado_2009,"Total do recorte em 2009, liquidado, em reais de 2025",scripts/gerar_dados_sinteticos.R (verdade sintética),total_ano,liquidado,2009,,reais,126672585.33,
+total_ano_liquidado_2010,"Total do recorte em 2010, liquidado, em reais de 2025",scripts/gerar_dados_sinteticos.R (verdade sintética),total_ano,liquidado,2010,,reais,49194820.47,
+total_ano_liquidado_2011,"Total do recorte em 2011, liquidado, em reais de 2025",scripts/gerar_dados_sinteticos.R (verdade sintética),total_ano,liquidado,2011,,reais,45566209.13,
+total_ano_liquidado_2012,"Total do recorte em 2012, liquidado, em reais de 2025",scripts/gerar_dados_sinteticos.R (verdade sintética),total_ano,liquidado,2012,,reais,54210773.38,
+total_ano_liquidado_2013,"Total do recorte em 2013, liquidado, em reais de 2025",scripts/gerar_dados_sinteticos.R (verdade sintética),total_ano,liquidado,2013,,reais,76388713.18,
+total_ano_liquidado_2014,"Total do recorte em 2014, liquidado, em reais de 2025",scripts/gerar_dados_sinteticos.R (verdade sintética),total_ano,liquidado,2014,,reais,99291086.34,
+total_ano_liquidado_2015,"Total do recorte em 2015, liquidado, em reais de 2025",scripts/gerar_dados_sinteticos.R (verdade sintética),total_ano,liquidado,2015,,reais,56028032.38,
+total_ano_liquidado_2016,"Total do recorte em 2016, liquidado, em reais de 2025",scripts/gerar_dados_sinteticos.R (verdade sintética),total_ano,liquidado,2016,,reais,73274560.89,
+total_ano_liquidado_2017,"Total do recorte em 2017, liquidado, em reais de 2025",scripts/gerar_dados_sinteticos.R (verdade sintética),total_ano,liquidado,2017,,reais,47761510.57,
+total_ano_liquidado_2018,"Total do recorte em 2018, liquidado, em reais de 2025",scripts/gerar_dados_sinteticos.R (verdade sintética),total_ano,liquidado,2018,,reais,109541786.42,
+total_ano_liquidado_2019,"Total do recorte em 2019, liquidado, em reais de 2025",scripts/gerar_dados_sinteticos.R (verdade sintética),total_ano,liquidado,2019,,reais,94845417.94,
+total_ano_liquidado_2020,"Total do recorte em 2020, liquidado, em reais de 2025",scripts/gerar_dados_sinteticos.R (verdade sintética),total_ano,liquidado,2020,,reais,95312594.16,
+total_ano_liquidado_2021,"Total do recorte em 2021, liquidado, em reais de 2025",scripts/gerar_dados_sinteticos.R (verdade sintética),total_ano,liquidado,2021,,reais,52983873.18,
+total_ano_liquidado_2022,"Total do recorte em 2022, liquidado, em reais de 2025",scripts/gerar_dados_sinteticos.R (verdade sintética),total_ano,liquidado,2022,,reais,66801738.06,
+total_ano_liquidado_2023,"Total do recorte em 2023, liquidado, em reais de 2025",scripts/gerar_dados_sinteticos.R (verdade sintética),total_ano,liquidado,2023,,reais,70076196.08,
+total_ano_liquidado_2024,"Total do recorte em 2024, liquidado, em reais de 2025",scripts/gerar_dados_sinteticos.R (verdade sintética),total_ano,liquidado,2024,,reais,114621242.98,
+total_ano_liquidado_2025,"Total do recorte em 2025, liquidado, em reais de 2025",scripts/gerar_dados_sinteticos.R (verdade sintética),total_ano,liquidado,2025,,reais,64780070.00,
+total_ano_pago_2005,"Total do recorte em 2005, pago, em reais de 2025",scripts/gerar_dados_sinteticos.R (verdade sintética),total_ano,pago,2005,,reais,59756427.47,
+total_ano_pago_2006,"Total do recorte em 2006, pago, em reais de 2025",scripts/gerar_dados_sinteticos.R (verdade sintética),total_ano,pago,2006,,reais,70908763.64,
+total_ano_pago_2007,"Total do recorte em 2007, pago, em reais de 2025",scripts/gerar_dados_sinteticos.R (verdade sintética),total_ano,pago,2007,,reais,55347918.02,
+total_ano_pago_2008,"Total do recorte em 2008, pago, em reais de 2025",scripts/gerar_dados_sinteticos.R (verdade sintética),total_ano,pago,2008,,reais,99979927.68,
+total_ano_pago_2009,"Total do recorte em 2009, pago, em reais de 2025",scripts/gerar_dados_sinteticos.R (verdade sintética),total_ano,pago,2009,,reais,120489740.13,
+total_ano_pago_2010,"Total do recorte em 2010, pago, em reais de 2025",scripts/gerar_dados_sinteticos.R (verdade sintética),total_ano,pago,2010,,reais,47041295.47,
+total_ano_pago_2011,"Total do recorte em 2011, pago, em reais de 2025",scripts/gerar_dados_sinteticos.R (verdade sintética),total_ano,pago,2011,,reais,42886150.72,
+total_ano_pago_2012,"Total do recorte em 2012, pago, em reais de 2025",scripts/gerar_dados_sinteticos.R (verdade sintética),total_ano,pago,2012,,reais,51018877.40,
+total_ano_pago_2013,"Total do recorte em 2013, pago, em reais de 2025",scripts/gerar_dados_sinteticos.R (verdade sintética),total_ano,pago,2013,,reais,72943432.47,
+total_ano_pago_2014,"Total do recorte em 2014, pago, em reais de 2025",scripts/gerar_dados_sinteticos.R (verdade sintética),total_ano,pago,2014,,reais,93468892.82,
+total_ano_pago_2015,"Total do recorte em 2015, pago, em reais de 2025",scripts/gerar_dados_sinteticos.R (verdade sintética),total_ano,pago,2015,,reais,53907857.35,
+total_ano_pago_2016,"Total do recorte em 2016, pago, em reais de 2025",scripts/gerar_dados_sinteticos.R (verdade sintética),total_ano,pago,2016,,reais,70483363.83,
+total_ano_pago_2017,"Total do recorte em 2017, pago, em reais de 2025",scripts/gerar_dados_sinteticos.R (verdade sintética),total_ano,pago,2017,,reais,45089905.53,
+total_ano_pago_2018,"Total do recorte em 2018, pago, em reais de 2025",scripts/gerar_dados_sinteticos.R (verdade sintética),total_ano,pago,2018,,reais,102954897.96,
+total_ano_pago_2019,"Total do recorte em 2019, pago, em reais de 2025",scripts/gerar_dados_sinteticos.R (verdade sintética),total_ano,pago,2019,,reais,90411886.53,
+total_ano_pago_2020,"Total do recorte em 2020, pago, em reais de 2025",scripts/gerar_dados_sinteticos.R (verdade sintética),total_ano,pago,2020,,reais,88935044.01,
+total_ano_pago_2021,"Total do recorte em 2021, pago, em reais de 2025",scripts/gerar_dados_sinteticos.R (verdade sintética),total_ano,pago,2021,,reais,50151716.21,
+total_ano_pago_2022,"Total do recorte em 2022, pago, em reais de 2025",scripts/gerar_dados_sinteticos.R (verdade sintética),total_ano,pago,2022,,reais,62662824.43,
+total_ano_pago_2023,"Total do recorte em 2023, pago, em reais de 2025",scripts/gerar_dados_sinteticos.R (verdade sintética),total_ano,pago,2023,,reais,66503889.88,
+total_ano_pago_2024,"Total do recorte em 2024, pago, em reais de 2025",scripts/gerar_dados_sinteticos.R (verdade sintética),total_ano,pago,2024,,reais,109279259.57,
+total_ano_pago_2025,"Total do recorte em 2025, pago, em reais de 2025",scripts/gerar_dados_sinteticos.R (verdade sintética),total_ano,pago,2025,,reais,61052808.00,
+total_periodo_projeto_lei,"Total do recorte de 2005 a 2025, projeto_lei",scripts/gerar_dados_sinteticos.R (verdade sintética),total_periodo,projeto_lei,,,reais,1932657502.32,
+media_anual_projeto_lei,"Média anual do recorte de 2005 a 2025, projeto_lei",scripts/gerar_dados_sinteticos.R (verdade sintética),media_anual,projeto_lei,,,reais,92031309.63,
+total_periodo_dotacao_inicial,"Total do recorte de 2005 a 2025, dotacao_inicial",scripts/gerar_dados_sinteticos.R (verdade sintética),total_periodo,dotacao_inicial,,,reais,1930826995.52,
+media_anual_dotacao_inicial,"Média anual do recorte de 2005 a 2025, dotacao_inicial",scripts/gerar_dados_sinteticos.R (verdade sintética),media_anual,dotacao_inicial,,,reais,91944142.64,
+total_periodo_dotacao_atual,"Total do recorte de 2005 a 2025, dotacao_atual",scripts/gerar_dados_sinteticos.R (verdade sintética),total_periodo,dotacao_atual,,,reais,2039477463.56,
+media_anual_dotacao_atual,"Média anual do recorte de 2005 a 2025, dotacao_atual",scripts/gerar_dados_sinteticos.R (verdade sintética),media_anual,dotacao_atual,,,reais,97117974.46,
+total_periodo_empenhado,"Total do recorte de 2005 a 2025, empenhado",scripts/gerar_dados_sinteticos.R (verdade sintética),total_periodo,empenhado,,,reais,1722263547.99,
+media_anual_empenhado,"Média anual do recorte de 2005 a 2025, empenhado",scripts/gerar_dados_sinteticos.R (verdade sintética),media_anual,empenhado,,,reais,82012549.90,
+total_periodo_liquidado,"Total do recorte de 2005 a 2025, liquidado",scripts/gerar_dados_sinteticos.R (verdade sintética),total_periodo,liquidado,,,reais,1597918763.85,
+media_anual_liquidado,"Média anual do recorte de 2005 a 2025, liquidado",scripts/gerar_dados_sinteticos.R (verdade sintética),media_anual,liquidado,,,reais,76091369.71,
+total_periodo_pago,"Total do recorte de 2005 a 2025, pago",scripts/gerar_dados_sinteticos.R (verdade sintética),total_periodo,pago,,,reais,1515274879.11,
+media_anual_pago,"Média anual do recorte de 2005 a 2025, pago",scripts/gerar_dados_sinteticos.R (verdade sintética),media_anual,pago,,,reais,72155946.62,
+total_gnd_1_dotacao_atual,"Total do período no GND 1, dotacao_atual",scripts/gerar_dados_sinteticos.R (verdade sintética),total_gnd,dotacao_atual,,gnd_cod=1,reais,48999638.50,
+total_gnd_1_dotacao_atual_pct,"Peso do GND 1 no total do período, dotacao_atual",scripts/gerar_dados_sinteticos.R (verdade sintética),total_gnd,dotacao_atual,,gnd_cod=1,pct,2.4026,"Percentual do total da fase no período, valores reais."
+total_gnd_3_dotacao_atual,"Total do período no GND 3, dotacao_atual",scripts/gerar_dados_sinteticos.R (verdade sintética),total_gnd,dotacao_atual,,gnd_cod=3,reais,1713584080.38,
+total_gnd_3_dotacao_atual_pct,"Peso do GND 3 no total do período, dotacao_atual",scripts/gerar_dados_sinteticos.R (verdade sintética),total_gnd,dotacao_atual,,gnd_cod=3,pct,84.0207,"Percentual do total da fase no período, valores reais."
+total_gnd_4_dotacao_atual,"Total do período no GND 4, dotacao_atual",scripts/gerar_dados_sinteticos.R (verdade sintética),total_gnd,dotacao_atual,,gnd_cod=4,reais,276893744.68,
+total_gnd_4_dotacao_atual_pct,"Peso do GND 4 no total do período, dotacao_atual",scripts/gerar_dados_sinteticos.R (verdade sintética),total_gnd,dotacao_atual,,gnd_cod=4,pct,13.5767,"Percentual do total da fase no período, valores reais."
+total_gnd_1_empenhado,"Total do período no GND 1, empenhado",scripts/gerar_dados_sinteticos.R (verdade sintética),total_gnd,empenhado,,gnd_cod=1,reais,42377728.92,
+total_gnd_1_empenhado_pct,"Peso do GND 1 no total do período, empenhado",scripts/gerar_dados_sinteticos.R (verdade sintética),total_gnd,empenhado,,gnd_cod=1,pct,2.4606,"Percentual do total da fase no período, valores reais."
+total_gnd_3_empenhado,"Total do período no GND 3, empenhado",scripts/gerar_dados_sinteticos.R (verdade sintética),total_gnd,empenhado,,gnd_cod=3,reais,1451815739.95,
+total_gnd_3_empenhado_pct,"Peso do GND 3 no total do período, empenhado",scripts/gerar_dados_sinteticos.R (verdade sintética),total_gnd,empenhado,,gnd_cod=3,pct,84.2970,"Percentual do total da fase no período, valores reais."
+total_gnd_4_empenhado,"Total do período no GND 4, empenhado",scripts/gerar_dados_sinteticos.R (verdade sintética),total_gnd,empenhado,,gnd_cod=4,reais,228070079.12,
+total_gnd_4_empenhado_pct,"Peso do GND 4 no total do período, empenhado",scripts/gerar_dados_sinteticos.R (verdade sintética),total_gnd,empenhado,,gnd_cod=4,pct,13.2425,"Percentual do total da fase no período, valores reais."
+total_ano_dotacao_atual_2010_nominal,"Total do recorte em 2010, dotacao_atual, nominal",scripts/gerar_dados_sinteticos.R (verdade sintética),total_ano,dotacao_atual,2010,valor=nominal,reais,28976794.00,Valor nominal
+total_acao_ZM01_2021_empenhado_pct,Peso da ação ZM01 no empenhado de 2021,scripts/gerar_dados_sinteticos.R (verdade sintética),total_acao_ano,empenhado,2021,acao_cod=ZM01,pct,18.8040,Percentual do empenhado total do ano.
+total_acao_ZM01_2021_dotacao_atual,"Ação ZM01 em 2021, dotacao_atual",scripts/gerar_dados_sinteticos.R (verdade sintética),total_acao_ano,dotacao_atual,2021,acao_cod=ZM01,reais,14025006.65,
+total_acao_ZA01_2010_empenhado,"Ação ZA01 em 2010, empenhado",scripts/gerar_dados_sinteticos.R (verdade sintética),total_acao_ano,empenhado,2010,acao_cod=ZA01,reais,12546579.34,
+total_acao_ZD01_2011_dotacao_atual,"Ação ZD01 em 2011, dotacao_atual",scripts/gerar_dados_sinteticos.R (verdade sintética),total_acao_ano,dotacao_atual,2011,acao_cod=ZD01,reais,3590839.53,
+total_acao_ZG01_2005_pago,"Ação ZG01 em 2005, pago",scripts/gerar_dados_sinteticos.R (verdade sintética),total_acao_ano,pago,2005,acao_cod=ZG01,reais,1267850.26,
+taxa_execucao_periodo,"Empenhado sobre dotação atual, período inteiro, em reais de 2025",scripts/gerar_dados_sinteticos.R (verdade sintética),taxa_execucao_periodo,empenhado,,,pct,84.4463,
+participacao_2005,Participação do recorte no empenhado do Executivo em 2005,scripts/gerar_dados_sinteticos.R (verdade sintética),participacao_ano,empenhado,2005,,pct,5.5595,Valores nominais
+participacao_2006,Participação do recorte no empenhado do Executivo em 2006,scripts/gerar_dados_sinteticos.R (verdade sintética),participacao_ano,empenhado,2006,,pct,6.4434,Valores nominais
+participacao_2007,Participação do recorte no empenhado do Executivo em 2007,scripts/gerar_dados_sinteticos.R (verdade sintética),participacao_ano,empenhado,2007,,pct,5.0829,Valores nominais
+participacao_2008,Participação do recorte no empenhado do Executivo em 2008,scripts/gerar_dados_sinteticos.R (verdade sintética),participacao_ano,empenhado,2008,,pct,8.7752,Valores nominais
+participacao_2009,Participação do recorte no empenhado do Executivo em 2009,scripts/gerar_dados_sinteticos.R (verdade sintética),participacao_ano,empenhado,2009,,pct,10.7668,Valores nominais
+participacao_2010,Participação do recorte no empenhado do Executivo em 2010,scripts/gerar_dados_sinteticos.R (verdade sintética),participacao_ano,empenhado,2010,,pct,4.2996,Valores nominais
+participacao_2011,Participação do recorte no empenhado do Executivo em 2011,scripts/gerar_dados_sinteticos.R (verdade sintética),participacao_ano,empenhado,2011,,pct,3.8844,Valores nominais
+participacao_2012,Participação do recorte no empenhado do Executivo em 2012,scripts/gerar_dados_sinteticos.R (verdade sintética),participacao_ano,empenhado,2012,,pct,5.0174,Valores nominais
+participacao_2013,Participação do recorte no empenhado do Executivo em 2013,scripts/gerar_dados_sinteticos.R (verdade sintética),participacao_ano,empenhado,2013,,pct,6.0140,Valores nominais
+participacao_2014,Participação do recorte no empenhado do Executivo em 2014,scripts/gerar_dados_sinteticos.R (verdade sintética),participacao_ano,empenhado,2014,,pct,8.5536,Valores nominais
+participacao_2015,Participação do recorte no empenhado do Executivo em 2015,scripts/gerar_dados_sinteticos.R (verdade sintética),participacao_ano,empenhado,2015,,pct,4.9631,Valores nominais
+participacao_2016,Participação do recorte no empenhado do Executivo em 2016,scripts/gerar_dados_sinteticos.R (verdade sintética),participacao_ano,empenhado,2016,,pct,5.8566,Valores nominais
+participacao_2017,Participação do recorte no empenhado do Executivo em 2017,scripts/gerar_dados_sinteticos.R (verdade sintética),participacao_ano,empenhado,2017,,pct,4.5267,Valores nominais
+participacao_2018,Participação do recorte no empenhado do Executivo em 2018,scripts/gerar_dados_sinteticos.R (verdade sintética),participacao_ano,empenhado,2018,,pct,8.9614,Valores nominais
+participacao_2019,Participação do recorte no empenhado do Executivo em 2019,scripts/gerar_dados_sinteticos.R (verdade sintética),participacao_ano,empenhado,2019,,pct,8.0953,Valores nominais
+participacao_2020,Participação do recorte no empenhado do Executivo em 2020,scripts/gerar_dados_sinteticos.R (verdade sintética),participacao_ano,empenhado,2020,,pct,8.0659,Valores nominais
+participacao_2021,Participação do recorte no empenhado do Executivo em 2021,scripts/gerar_dados_sinteticos.R (verdade sintética),participacao_ano,empenhado,2021,,pct,4.2233,Valores nominais
+participacao_2022,Participação do recorte no empenhado do Executivo em 2022,scripts/gerar_dados_sinteticos.R (verdade sintética),participacao_ano,empenhado,2022,,pct,5.7337,Valores nominais
+participacao_2023,Participação do recorte no empenhado do Executivo em 2023,scripts/gerar_dados_sinteticos.R (verdade sintética),participacao_ano,empenhado,2023,,pct,6.1391,Valores nominais
+participacao_2024,Participação do recorte no empenhado do Executivo em 2024,scripts/gerar_dados_sinteticos.R (verdade sintética),participacao_ano,empenhado,2024,,pct,9.6646,Valores nominais
+participacao_2025,Participação do recorte no empenhado do Executivo em 2025,scripts/gerar_dados_sinteticos.R (verdade sintética),participacao_ano,empenhado,2025,,pct,4.7685,Denominador estimado (fração Executivo/União da safra antiga sobre a União da safra nova)
+ano_maximo_participacao,Ano de maior participação do recorte no empenhado do Executivo,scripts/gerar_dados_sinteticos.R (verdade sintética),ano_maximo_participacao,empenhado,,,lista,2009,"Ano com a maior participação, empenhado nominal sobre empenhado nominal do Executivo."
+denominador_2005,Empenhado do Executivo em 2005 (nominal),scripts/gerar_dados_sinteticos.R (verdade sintética),denominador_executivo_ano,empenhado,2005,,reais,406668448.00,Valor nominal
+denominador_2006,Empenhado do Executivo em 2006 (nominal),scripts/gerar_dados_sinteticos.R (verdade sintética),denominador_executivo_ano,empenhado,2006,,reais,457164769.00,Valor nominal
+denominador_2007,Empenhado do Executivo em 2007 (nominal),scripts/gerar_dados_sinteticos.R (verdade sintética),denominador_executivo_ano,empenhado,2007,,reais,480944371.00,Valor nominal
+denominador_2008,Empenhado do Executivo em 2008 (nominal),scripts/gerar_dados_sinteticos.R (verdade sintética),denominador_executivo_ano,empenhado,2008,,reais,536903008.00,Valor nominal
+denominador_2009,Empenhado do Executivo em 2009 (nominal),scripts/gerar_dados_sinteticos.R (verdade sintética),denominador_executivo_ano,empenhado,2009,,reais,558653360.00,Valor nominal
+denominador_2010,Empenhado do Executivo em 2010 (nominal),scripts/gerar_dados_sinteticos.R (verdade sintética),denominador_executivo_ano,empenhado,2010,,reais,576934227.00,Valor nominal
+denominador_2011,Empenhado do Executivo em 2011 (nominal),scripts/gerar_dados_sinteticos.R (verdade sintética),denominador_executivo_ano,empenhado,2011,,reais,624170575.00,Valor nominal
+denominador_2012,Empenhado do Executivo em 2012 (nominal),scripts/gerar_dados_sinteticos.R (verdade sintética),denominador_executivo_ano,empenhado,2012,,reais,604061617.00,Valor nominal
+denominador_2013,Empenhado do Executivo em 2013 (nominal),scripts/gerar_dados_sinteticos.R (verdade sintética),denominador_executivo_ano,empenhado,2013,,reais,702660437.00,Valor nominal
+denominador_2014,Empenhado do Executivo em 2014 (nominal),scripts/gerar_dados_sinteticos.R (verdade sintética),denominador_executivo_ano,empenhado,2014,,reais,703735844.00,Valor nominal
+denominador_2015,Empenhado do Executivo em 2015 (nominal),scripts/gerar_dados_sinteticos.R (verdade sintética),denominador_executivo_ano,empenhado,2015,,reais,718245101.00,Valor nominal
+denominador_2016,Empenhado do Executivo em 2016 (nominal),scripts/gerar_dados_sinteticos.R (verdade sintética),denominador_executivo_ano,empenhado,2016,,reais,827105135.00,Valor nominal
+denominador_2017,Empenhado do Executivo em 2017 (nominal),scripts/gerar_dados_sinteticos.R (verdade sintética),denominador_executivo_ano,empenhado,2017,,reais,744676857.00,Valor nominal
+denominador_2018,Empenhado do Executivo em 2018 (nominal),scripts/gerar_dados_sinteticos.R (verdade sintética),denominador_executivo_ano,empenhado,2018,,reais,917284551.00,Valor nominal
+denominador_2019,Empenhado do Executivo em 2019 (nominal),scripts/gerar_dados_sinteticos.R (verdade sintética),denominador_executivo_ano,empenhado,2019,,reais,896987728.00,Valor nominal
+denominador_2020,Empenhado do Executivo em 2020 (nominal),scripts/gerar_dados_sinteticos.R (verdade sintética),denominador_executivo_ano,empenhado,2020,,reais,980339171.00,Valor nominal
+denominador_2021,Empenhado do Executivo em 2021 (nominal),scripts/gerar_dados_sinteticos.R (verdade sintética),denominador_executivo_ano,empenhado,2021,,reais,1075178177.00,Valor nominal
+denominador_2022,Empenhado do Executivo em 2022 (nominal),scripts/gerar_dados_sinteticos.R (verdade sintética),denominador_executivo_ano,empenhado,2022,,reais,1086477536.00,Valor nominal
+denominador_2023,Empenhado do Executivo em 2023 (nominal),scripts/gerar_dados_sinteticos.R (verdade sintética),denominador_executivo_ano,empenhado,2023,,reais,1126498642.00,Valor nominal
+denominador_2024,Empenhado do Executivo em 2024 (nominal),scripts/gerar_dados_sinteticos.R (verdade sintética),denominador_executivo_ano,empenhado,2024,,reais,1205777807.00,Valor nominal
+n_programas,Programas distintos no recorte,scripts/gerar_dados_sinteticos.R (verdade sintética),n_programas,,,,contagem,5,
+n_acoes,Ações distintas no recorte,scripts/gerar_dados_sinteticos.R (verdade sintética),n_acoes,,,,contagem,9,
+n_programas_limiar,Programas que somam 80% da dotação atual do período,scripts/gerar_dados_sinteticos.R (verdade sintética),n_programas_limiar,dotacao_atual,,,contagem,3,
+ranking_dotacao,"Os quatro anos de maior dotação atual, em reais de 2025",scripts/gerar_dados_sinteticos.R (verdade sintética),ranking_dotacao,dotacao_atual,,,lista,2009|2024|2018|2008,

@@ -1,0 +1,23 @@
+# Resultados gerados ao rodar o pipeline (refazem-se com Rscript rodar.R)
+_targets/
+saidas/
+relatorio/*.html
+relatorio/*_files/
+
+# Pacotes instalados pelo renv (o renv.lock é que vai para o repositório)
+renv/library/
+renv/staging/
+renv/sandbox/
+renv/local/
+
+# Arquivos de trabalho do Quarto (o site publicado fica em docs/)
+site/_site/
+site/.quarto/
+.quarto/
+
+# R e sistema
+.Rhistory
+.RData
+.Rproj.user/
+.DS_Store
+Thumbs.db

@@ -1,0 +1,29 @@
+---
+title: "Conferência independente do orçamento, em R"
+subtitle: "Vitrine com dados sintéticos"
+---
+
+## O que é
+
+Este repositório mostra como foi feita a conferência dos números de orçamento federal de juventude que o Instituto Cíclica publicou no projeto PPJ (20 anos da política federal de juventude). A conferência refaz as contas em R, por um caminho diferente do usado para produzir os números, e compara cada resultado com o valor publicado.
+
+Aqui o código roda sobre **dados sintéticos**: arquivos inventados que têm exatamente o mesmo formato das fontes reais (mesmas colunas, separadores e jeito de escrever números), mas com órgãos, programas, ações e valores fictícios. Assim qualquer pessoa pode rodar, ler e criticar o método sem acesso aos dados do projeto.
+
+## Por que existe
+
+Números de orçamento passam por muitas etapas até chegar a um relatório: extração do sistema oficial, filtro do que conta como política de juventude, correção pela inflação, somas por ano e por tipo de despesa. Um erro em qualquer etapa muda o resultado sem deixar rastro visível. Um fator de correção da inflação errado em um único ano, por exemplo, muda todos os valores daquele ano e passa despercebido se ninguém refizer a conta.
+
+Esta conferência existe para que esse tipo de erro seja pego por uma rotina que qualquer pessoa pode repetir, e não pela sorte de alguém revisar a conta certa.
+
+## O que você encontra aqui
+
+- **[Método](metodo.qmd)**: como a conferência funciona, etapa por etapa, em linguagem simples.
+- **[Relatório de exemplo](relatorio.html)**: o relatório que a conferência gera, aqui sobre os dados sintéticos. Mostra o veredito, cada checagem e a procedência dos arquivos, sem precisar instalar R nem Quarto.
+- **O código** (no repositório, em <https://github.com/attrindade/conferencia-orcamento-r>): os scripts em R, os testes automáticos e o modelo do relatório.
+- **Os dados sintéticos** (pasta `dados_sinteticos/`): gerados por um script com semente fixa, ou seja, quem rodar de novo obtém exatamente os mesmos arquivos.
+
+::: {.callout-note}
+## Sobre os números desta vitrine
+
+Nenhum valor, código ou nome que aparece aqui é do orçamento real. Os dados reais e os números publicados ficam em uma pasta privada; uma checagem automática impede que qualquer um deles chegue a este repositório (veja a seção "Checagem anti-vazamento" em [Método](metodo.qmd)).
+:::

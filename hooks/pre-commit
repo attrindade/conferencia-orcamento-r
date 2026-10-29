@@ -1,0 +1,51 @@
+#!/bin/sh
+# Antes de cada commit, roda a checagem anti-vazamento sobre o que está no
+# índice do git (o que de fato vai para o commit), e não sobre a pasta de
+# trabalho: o conteúdo do índice é exportado para uma pasta temporária e
+# checado lá. Qualquer resultado que não seja "nada encontrado" (status 0)
+# bloqueia o commit, inclusive quando a checagem não pôde rodar (status 2):
+# não checado não é o mesmo que limpo.
+#
+# Ativação (uma vez por clone):  git config core.hooksPath hooks
+# Rscript: usa $RSCRIPT se definido; senão o do scoop no Windows; senão o do PATH.
+# Pasta privada: $CONFERENCIA_PRIVADO (obrigatória; sem ela o commit é bloqueado).
+
+raiz="$(git rev-parse --show-toplevel)" || exit 1
+cd "$raiz" || exit 1
+
+if [ -n "$RSCRIPT" ]; then
+  R="$RSCRIPT"
+elif [ -x "$HOME/scoop/apps/r/current/bin/x64/Rscript.exe" ]; then
+  R="$HOME/scoop/apps/r/current/bin/x64/Rscript.exe"
+elif command -v Rscript >/dev/null 2>&1; then
+  R="Rscript"
+else
+  echo "pre-commit: não achei o Rscript. Defina RSCRIPT com o caminho dele. Commit bloqueado."
+  exit 1
+fi
+
+if [ -z "$CONFERENCIA_PRIVADO" ]; then
+  echo "pre-commit: defina CONFERENCIA_PRIVADO com a pasta da conferência privada. Commit bloqueado (não checado)."
+  exit 1
+fi
+
+tmp="$(mktemp -d 2>/dev/null)" || { echo "pre-commit: não consegui criar pasta temporária. Commit bloqueado."; exit 1; }
+trap 'rm -rf "$tmp"' EXIT
+
+# Exporta o índice inteiro (a barra final no prefixo é necessária).
+if ! git checkout-index --all --force --prefix="$tmp/indice/"; then
+  echo "pre-commit: não consegui exportar o índice do git. Commit bloqueado (não checado)."
+  exit 1
+fi
+mkdir -p "$tmp/indice"
+
+"$R" verificar_vazamento.R --privado "$CONFERENCIA_PRIVADO" --raiz "$tmp/indice"
+status=$?
+
+case $status in
+  0) exit 0 ;;
+  1) echo "pre-commit: commit bloqueado, o que está no índice contém termos da conferência privada (lista acima)." ;;
+  2) echo "pre-commit: commit bloqueado, a checagem não pôde terminar (motivo acima)." ;;
+  *) echo "pre-commit: commit bloqueado, a checagem terminou com erro (status $status)." ;;
+esac
+exit 1

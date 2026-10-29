@@ -1,0 +1,37 @@
+project:
+  type: website
+  # O site gerado vai para docs/, a pasta que o GitHub Pages publica quando se
+  # escolhe "Deploy from a branch: main /docs". Nada é publicado ao renderizar.
+  output-dir: ../docs
+  # .nojekyll evita que o GitHub Pages trate o site como Jekyll.
+  resources:
+    - .nojekyll
+
+lang: pt-BR
+
+website:
+  title: "Conferência do orçamento em R"
+  description: "Vitrine pública, com dados sintéticos, de uma conferência independente de números de orçamento público."
+  navbar:
+    left:
+      - href: index.qmd
+        text: Início
+      - href: metodo.qmd
+        text: Método
+      # relatorio.html não é gerado a partir de site/: é a cópia de
+      # relatorio/relatorio.html (rodada de rodar.R sobre os dados sintéticos)
+      # posta em docs/relatorio.html. O quarto render não apaga esse arquivo.
+      - href: relatorio.html
+        text: Relatório de exemplo
+  page-footer:
+    center: "Dados sintéticos. Nenhum número desta página é do orçamento real."
+
+format:
+  html:
+    theme:
+      light: cosmo
+      dark: darkly
+    toc: true
+    toc-title: "Nesta página"
+    number-sections: false
+    smooth-scroll: true

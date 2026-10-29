@@ -1,0 +1,1266 @@
+---
+title: "Conferência do orçamento de juventude"
+lang: pt-BR
+format:
+  html:
+    theme: [default, estilo.scss]
+    grid:
+      sidebar-width: 240px
+      body-width: 920px
+      margin-width: 60px
+    toc: true
+    toc-location: left
+    toc-title: "Neste relatório"
+    toc-depth: 2
+    embed-resources: true
+    anchor-sections: false
+    smooth-scroll: true
+    fig-align: left
+    fig-responsive: true
+    link-external-newwindow: true
+execute:
+  echo: false
+  warning: false
+  message: false
+knitr:
+  opts_chunk:
+    dev: "png"
+    dpi: 200
+    fig.width: 7.2
+    fig.height: 4.8
+---
+
+```{r}
+#| label: preparar
+# O relatório só lê os alvos do pipeline; não recalcula nada. Os nomes vão
+# literais em tar_read() para que o tar_quarto() perceba de quais alvos este
+# arquivo depende e o refaça quando algum deles mudar.
+#
+# Nada específico de um projeto fica escrito aqui: nomes, textos e números
+# vêm da configuração (alvo cfg), dos alvos e dos gabaritos. O mesmo arquivo
+# gera o relatório da conferência privada e o da vitrine com dados sintéticos.
+suppressPackageStartupMessages({
+  library(dplyr)
+  library(tidyr)
+  library(gt)
+  library(ggplot2)
+})
+
+# As funções de formatação brasileira são as mesmas testadas em R/utils.R,
+# para que relatório e testes não discordem sobre como um valor aparece. O
+# alvo arq_funcoes lista os arquivos de R/: lido aqui, ele faz o relatório ser
+# refeito quando uma função muda.
+arq_funcoes <- targets::tar_read(arq_funcoes, store = here::here("_targets"))
+# Os caminhos guardados são relativos à raiz do projeto, e o Quarto roda este
+# arquivo de dentro de relatorio/: here::here() devolve o caminho completo.
+source(here::here(arq_funcoes[basename(arq_funcoes) == "utils.R"]), encoding = "UTF-8")
+
+# No relatório, "R$" e o número ficam presos por um espaço inseparável, para
+# que a quebra de linha nunca deixe o "R$" sozinho no fim de uma linha.
+formatar_reais_utils <- formatar_reais
+formatar_reais <- function(x, casas = 2) {
+  sub("R$ ", "R$ ", formatar_reais_utils(x, casas), fixed = TRUE)
+}
+
+cfg <- targets::tar_read(cfg, store = here::here("_targets"))
+veredito <- targets::tar_read(veredito, store = here::here("_targets"))
+divergencias <- targets::tar_read(divergencias, store = here::here("_targets"))
+procedencia <- targets::tar_read(procedencia, store = here::here("_targets"))
+totais_ano <- targets::tar_read(totais_ano, store = here::here("_targets"))
+totais_periodo <- targets::tar_read(totais_periodo, store = here::here("_targets"))
+participacao <- targets::tar_read(participacao, store = here::here("_targets"))
+taxa_execucao <- targets::tar_read(taxa_execucao, store = here::here("_targets"))
+contagens <- targets::tar_read(contagens, store = here::here("_targets"))
+concentracao <- targets::tar_read(concentracao, store = here::here("_targets"))
+ranking_anos <- targets::tar_read(ranking_anos, store = here::here("_targets"))
+comparacao_safras_juventude <- targets::tar_read(comparacao_safras_juventude, store = here::here("_targets"))
+diferencas_juventude <- targets::tar_read(diferencas_juventude, store = here::here("_targets"))
+comparacao_safras_uniao <- targets::tar_read(comparacao_safras_uniao, store = here::here("_targets"))
+recorte_na_uniao <- targets::tar_read(recorte_na_uniao, store = here::here("_targets"))
+resumo_recorte <- targets::tar_read(resumo_recorte, store = here::here("_targets"))
+# Causas conhecidas (config/causas_conhecidas.yml): o relatório usa a nota e
+# o junto_de, para mostrar ao lado de uma diferença explicada um número que
+# confere, mas merece ressalva.
+causas <- targets::tar_read(causas, store = here::here("_targets"))
+
+# O {reactable} deixa as tabelas longas pesquisáveis na tela. Sem ele, a
+# tabela continua completa, só que estática.
+tem_reactable <- requireNamespace("reactable", quietly = TRUE)
+
+ano_ini <- cfg$periodo$ano_inicio
+ano_fim <- cfg$periodo$ano_fim
+ultimo_antiga <- cfg$periodo$ultimo_ano_safra_antiga
+precos <- cfg$projeto$data_referencia_precos
+tol <- cfg$tolerancias
+
+# Textos do projeto (seção relatorio: de config.yml). Sem a chave, vale um
+# texto genérico, para o relatório nunca quebrar por falta de configuração.
+rel <- if (is.null(cfg$relatorio)) list() else cfg$relatorio
+texto_cfg <- function(chave, padrao) texto_da_config(rel[[chave]], padrao)
+subtitulo <- texto_cfg("subtitulo", "Recálculo independente, em R, de números publicados")
+publicacoes <- texto_cfg("publicacoes", "nas publicações conferidas")
+# Sem artigo: o texto escreve "sem usar o", "usado pelo", "nenhuma linha do".
+referencia <- texto_cfg("referencia", "código que produziu os números publicados")
+fonte_dados <- texto_cfg("fonte_dados", "arquivos de dados configurados")
+responsavel <- responsavel_decisao(cfg)
+# Nome de cada arquivo da procedência (relatorio: papeis); sem rótulo, o papel.
+rotulo_papel <- function(papel) {
+  rot <- rel$papeis
+  vapply(papel, function(p) texto_da_config(rot[[p]], p), character(1), USE.NAMES = FALSE)
+}
+acoes_obrigatorias <- as.character(unlist(cfg$recorte$acoes_obrigatorias))
+
+NOMES_FASES <- c(
+  projeto_lei = "Projeto de lei",
+  dotacao_inicial = "Dotação inicial",
+  dotacao_atual = "Dotação atual",
+  empenhado = "Empenhado",
+  liquidado = "Liquidado",
+  pago = "Pago"
+)
+
+# Valores grandes no texto, no gráfico e nas tabelas de série vão em bilhões
+# ou em milhões, conforme o maior valor da série ou da tabela: abaixo de
+# R$ 1 bilhão, em milhões (senão o eixo mostraria "R$ 0 bi"). Uma tabela usa
+# uma só escala em todas as colunas. As conferências mostram o valor inteiro,
+# ao centavo.
+escala_de <- function(x) {
+  maximo <- suppressWarnings(max(abs(x), na.rm = TRUE))
+  if (!is.finite(maximo) || maximo >= 1e9) {
+    list(divisor = 1e9, sufixo = "bi", nome = "Bilhões", casas = 3)
+  } else {
+    list(divisor = 1e6, sufixo = "mi", nome = "Milhões", casas = 2)
+  }
+}
+# "R$" e o número presos por espaço inseparável, como em formatar_reais().
+em_escala <- function(x, escala, casas = escala$casas) {
+  texto <- paste0(
+    ifelse(!is.na(x) & x < 0, "-", ""), "R$\u00a0",
+    formatC(abs(x) / escala$divisor, format = "f", digits = casas, big.mark = ".", decimal.mark = ","),
+    " ", escala$sufixo
+  )
+  texto[is.na(x)] <- "sem valor"
+  texto
+}
+# Para a nota de rodapé das tabelas ("com três casas decimais").
+casas_texto <- function(escala) c("nenhuma", "uma", "duas", "três")[escala$casas + 1]
+
+# Dica para as tabelas largas: só aparece em tela estreita (estilo.scss), onde
+# a tabela rola dentro da própria caixa.
+com_dica <- function(tabela) {
+  htmltools::tagList(
+    htmltools::p(class = "dica-rolagem", "Arraste a tabela para o lado para ver todas as colunas."),
+    tabela
+  )
+}
+inteiro <- function(x) formatC(as.numeric(x), format = "d", big.mark = ".", decimal.mark = ",")
+numero_texto <- function(x) suppressWarnings(as.numeric(as.character(x)))
+lista_e <- function(x) {
+  x <- as.character(x)
+  if (length(x) <= 1) return(x)
+  paste(paste(utils::head(x, -1), collapse = ", "), "e", utils::tail(x, 1))
+}
+# Cada número com as casas que ele tem: uma contagem (65) não ganha zeros só
+# porque outra linha da mesma coluna é um fator com seis casas.
+numero_curto <- function(x) {
+  vapply(x, function(v) {
+    if (is.na(v)) return(NA_character_)
+    format(v, big.mark = ".", decimal.mark = ",", scientific = FALSE, trim = TRUE,
+      drop0trailing = TRUE, digits = 15)
+  }, character(1), USE.NAMES = FALSE)
+}
+pontos <- function(x, casas = 2) {
+  v <- formatC(abs(x), format = "f", digits = casas, decimal.mark = ",")
+  # Em português, abaixo de 2 vai no singular ("0,05 ponto percentual").
+  paste0(ifelse(x < 0, "-", ""), v, ifelse(abs(x) < 2, " ponto percentual", " pontos percentuais"))
+}
+
+# A formatação depende da unidade da linha (seção 7 do contrato). "fator" é
+# a unidade dos fatores de correção, comparados com sete casas decimais.
+formatar_valor <- function(x, unidade) {
+  v <- numero_texto(x)
+  out <- rep("sem valor", length(x))
+  r <- unidade == "reais" & !is.na(v)
+  p <- unidade == "pct" & !is.na(v)
+  k <- unidade == "contagem" & !is.na(v)
+  f <- unidade == "fator" & !is.na(v)
+  l <- unidade == "lista" & !is.na(x) & !is.na(v)
+  out[r] <- formatar_reais(v[r])
+  out[p] <- formatar_pct(v[p], 2)
+  out[k] <- numero_curto(v[k])
+  out[f] <- formatC(v[f], format = "f", digits = 7, decimal.mark = ",")
+  out[l] <- numero_curto(v[l])
+  outros <- !(r | p | k | f | l) & !is.na(v)
+  out[outros] <- numero_curto(v[outros])
+  out
+}
+
+# n_itens: quantos itens tem a lista do gabarito (só para a unidade "lista").
+formatar_diferenca <- function(d, unidade, n_itens = rep(NA_integer_, length(d))) {
+  d <- numero_texto(d)
+  out <- rep("sem valor", length(d))
+  r <- unidade == "reais" & !is.na(d)
+  p <- unidade == "pct" & !is.na(d)
+  k <- unidade == "contagem" & !is.na(d)
+  f <- unidade == "fator" & !is.na(d)
+  # Na lista (ranking de anos, ano do máximo), a diferença é o número de
+  # posições que não batem; iguais, "nenhuma".
+  l <- unidade == "lista" & !is.na(d)
+  out[r] <- formatar_reais(d[r])
+  # Quatro casas: com duas, uma diferença de 0,0472 sairia "0,05", igual à
+  # tolerância, e pareceria estar no limite.
+  out[p] <- pontos(d[p], 4)
+  out[k] <- numero_curto(d[k])
+  out[f] <- formatC(d[f], format = "f", digits = 7, decimal.mark = ",")
+  out[l] <- dplyr::case_when(
+    d[l] == 0 ~ "nenhuma",
+    n_itens[l] %in% 1 ~ "valor diferente",
+    is.na(n_itens[l]) ~ paste(numero_curto(d[l]), ifelse(d[l] == 1, "posição diferente", "posições diferentes")),
+    TRUE ~ paste(numero_curto(d[l]), "de", n_itens[l], ifelse(d[l] == 1, "posição diferente", "posições diferentes"))
+  )
+  out
+}
+
+formatar_tolerancia <- function(t, unidade) {
+  t <- numero_texto(t)
+  # Se a linha não trouxer a tolerância, vale a da configuração para a unidade.
+  padrao <- c(reais = tol$reais, pct = tol$pontos_percentuais, contagem = tol$contagem, fator = TOLERANCIA_FATOR)
+  sem <- is.na(t) & unidade %in% names(padrao)
+  t[sem] <- padrao[unidade[sem]]
+  case_when(
+    unidade == "reais" ~ paste("até", formatar_reais(t)),
+    unidade == "pct" ~ paste("até", pontos(t)),
+    unidade == "contagem" & (is.na(t) | t == 0) ~ "exata",
+    unidade == "contagem" ~ paste("até", numero_curto(t)),
+    unidade == "lista" ~ "exata, na mesma ordem",
+    unidade == "fator" ~ paste("até", formatC(t, format = "f", digits = 7, decimal.mark = ",")),
+    TRUE ~ "não informada"
+  )
+}
+
+# Na métrica "lista", o pipeline deixa as colunas de valor vazias e escreve as
+# duas listas na descrição, no formato "(R: ...; gabarito: ...)". O relatório
+# devolve cada lista à sua coluna, para a leitura ficar igual à das outras linhas.
+separar_lista <- function(descricao, unidade) {
+  padrao <- "^(.*) \\(R: (.*); gabarito: (.*)\\)$"
+  eh_lista <- unidade == "lista" & grepl(padrao, descricao)
+  # Calculado antes do tibble(), que enxergaria a coluna "descricao" já cortada.
+  lista_r <- ifelse(eh_lista, sub(padrao, "\\2", descricao), NA_character_)
+  lista_gabarito <- ifelse(eh_lista, sub(padrao, "\\3", descricao), NA_character_)
+  tibble::tibble(
+    descricao = ifelse(eh_lista, sub(padrao, "\\1", descricao), descricao),
+    lista_r = lista_r,
+    lista_gabarito = lista_gabarito
+  )
+}
+
+# Espaço inseparável entre ícone e palavra: os dois nunca ficam em linhas diferentes.
+ROTULO_STATUS <- c(confere = "✓ Confere", explicada = "ⓘ Explicada", diverge = "✗ Diverge")
+rotulo_status <- function(s) unname(ifelse(s %in% names(ROTULO_STATUS), ROTULO_STATUS[s], s))
+
+# Famílias de checagem: vêm de relatorio: familias em config.yml, na ordem de
+# autoridade das fontes. Cada linha de divergencias.csv vai para a primeira
+# família cuja expressão regular (fonte_regex) casa com a coluna "fonte". As
+# checagens que não dependem de número publicado têm fonte começando por
+# "Checagem interna" (R/conferir.R) e vão para a família "internas"; o resto
+# vai para "outras". Nenhuma linha some do relatório.
+FAMILIAS <- purrr::imap(if (is.null(rel$familias)) list() else rel$familias, function(f, i) {
+  list(chave = paste0("familia_", i), titulo = f$titulo, fonte_regex = f$fonte_regex,
+       o_que = f$o_que, com_o_que = f$com_o_que, se_divergir = f$se_divergir)
+})
+familia_de <- function(fonte) {
+  fonte <- dplyr::coalesce(fonte, "")
+  out <- rep(NA_character_, length(fonte))
+  for (f in FAMILIAS) {
+    casa <- is.na(out) & grepl(f$fonte_regex, fonte, perl = TRUE)
+    out[casa] <- f$chave
+  }
+  out[is.na(out) & startsWith(fonte, "Checagem interna")] <- "internas"
+  out[is.na(out)] <- "outras"
+  out
+}
+
+div_fmt <- divergencias |>
+  mutate(across(c(id, descricao, fonte, unidade, status, provavel_causa, encaminhamento), as.character))
+listas <- separar_lista(div_fmt$descricao, div_fmt$unidade)
+n_itens_lista <- ifelse(is.na(listas$lista_gabarito), NA_integer_,
+                        lengths(strsplit(dplyr::coalesce(listas$lista_gabarito, ""), ", ", fixed = TRUE)))
+div_fmt <- div_fmt |>
+  mutate(
+    descricao = listas$descricao,
+    familia = familia_de(fonte),
+    situacao = rotulo_status(status),
+    valor_r_txt = coalesce(listas$lista_r, formatar_valor(valor_r, unidade)),
+    gabarito_txt = coalesce(listas$lista_gabarito, formatar_valor(valor_gabarito, unidade)),
+    diferenca_txt = formatar_diferenca(diferenca, unidade, n_itens_lista),
+    tolerancia_txt = formatar_tolerancia(tolerancia, unidade),
+    ordem_status = match(status, c("diverge", "explicada", "confere"))
+  )
+
+# Notas das causas conhecidas (campo nota, com junto_de): um número que
+# confere, mas merece ressalva, leva a nota no cartão e na lista completa.
+for (col in c("nota", "junto_de")) if (!col %in% names(causas)) causas[[col]] <- NA_character_
+div_fmt <- div_fmt |>
+  left_join(causas |> filter(!is.na(nota)) |> select(id, nota, junto_de), by = "id")
+
+# Tolerância de uma família, a partir das unidades presentes nela.
+tolerancia_familia <- function(f) {
+  unidades <- unique(div_fmt$unidade[div_fmt$familia == f])
+  partes <- c(
+    reais = sprintf("%s por valor em reais", formatar_reais(tol$reais)),
+    pct = sprintf("%s para percentuais", pontos(tol$pontos_percentuais)),
+    contagem = if (as.numeric(tol$contagem) == 0) "nenhuma para contagens" else sprintf("%s para contagens", numero_curto(tol$contagem)),
+    lista = "nenhuma para listas (mesmos itens, na mesma ordem)",
+    fator = sprintf("%s para fatores de correção", formatC(TOLERANCIA_FATOR, format = "f", digits = 7, decimal.mark = ","))
+  )
+  escolhidas <- partes[intersect(names(partes), unidades)]
+  if (length(escolhidas) == 0) return("não se aplica (nenhum número nesta rodada).")
+  paste0(lista_e(escolhidas), ".")
+}
+
+resultado_familia <- function(f) {
+  d <- filter(div_fmt, familia == f)
+  if (nrow(d) == 0) return("**Resultado nesta rodada:** nenhum número desta família foi conferido.")
+  n_conf <- sum(d$status == "confere")
+  n_exp <- sum(d$status == "explicada")
+  n_div <- sum(d$status == "diverge")
+  partes <- c(
+    sprintf("%s conferem", inteiro(n_conf)),
+    if (n_exp > 0) sprintf("%s com divergência explicada", inteiro(n_exp)),
+    if (n_div > 0) sprintf("**%s com divergência sem explicação**", inteiro(n_div))
+  )
+  sprintf("**Resultado nesta rodada:** %s números; %s.", inteiro(nrow(d)), paste(partes, collapse = "; "))
+}
+
+# Estilo comum das tabelas: cabeçalho discreto e números alinhados.
+tabela_base <- function(g) {
+  g |>
+    tab_options(
+      table.width = pct(100),
+      table.font.size = px(15),
+      column_labels.font.weight = "bold",
+      data_row.padding = px(6),
+      table.border.top.style = "hidden"
+    ) |>
+    opt_table_font(stack = "system-ui")
+}
+
+interativa <- function(g, linhas = 15) {
+  if (!tem_reactable) return(g)
+  g |> opt_interactive(
+    use_search = TRUE,
+    use_pagination = TRUE,
+    use_page_size_select = TRUE,
+    page_size_default = linhas,
+    page_size_values = sort(unique(c(linhas, 50, 200))),
+    use_compact_mode = TRUE,
+    use_text_wrapping = TRUE,
+    use_highlight = TRUE
+  )
+}
+```
+
+```{r}
+#| label: subtitulo
+#| output: asis
+# O subtítulo vem da configuração (relatorio: subtitulo). Um bloco de
+# metadados no meio do documento é lido pelo pandoc como se estivesse no
+# cabeçalho.
+cat("\n---\n", yaml::as.yaml(list(subtitle = subtitulo)), "---\n\n", sep = "")
+```
+
+```{=html}
+<!-- No celular o Quarto esconde o sumário lateral; este sumário recolhido
+     ocupa uma linha e só aparece em tela estreita. -->
+<details class="sumario-celular">
+<summary>Neste relatório (sumário)</summary>
+<ol>
+<li><a href="#veredito">Veredito</a></li>
+<li><a href="#atencao">O que precisa de atenção</a></li>
+<li><a href="#como-ler">Como ler as conferências</a></li>
+<li><a href="#todas">Todas as conferências</a></li>
+<li><a href="#serie">A série ano a ano</a></li>
+<li><a href="#participacao">Participação no gasto do Executivo</a></li>
+<li><a href="#safras">Duas safras da base e o teste do recorte</a></li>
+<li><a href="#como-foi-feito">Como este relatório foi feito</a></li>
+<li><a href="#glossario">Glossário</a></li>
+</ol>
+</details>
+```
+
+## Veredito {#veredito}
+
+```{r}
+#| label: cartoes
+#| output: asis
+# Ícones desenhados em uma grade de 240 × 240, com coordenadas inteiras: com
+# casas decimais, os números do desenho casariam por acaso com valores em
+# bilhões na checagem anti-vazamento da vitrine.
+icone <- function(tipo) {
+  caminho <- switch(tipo,
+    ok = "M90 162 48 120l-14 14L90 190 210 70l-14-14z",
+    info = "M110 70h20v20h-20zm0 40h20v60h-20zm10-90a100 100 0 1 0 0 200 100 100 0 0 0 0-200zm0 180a80 80 0 1 1 0-160 80 80 0 0 1 0 160z",
+    erro = "M190 64 176 50 120 106 64 50 50 64 106 120 50 176 64 190 120 134 176 190 190 176 134 120z",
+    total = "M30 50h180v20H30zm0 60h180v20H30zm0 60h180v20H30z"
+  )
+  sprintf('<svg class="icone" viewBox="0 0 240 240" aria-hidden="true" focusable="false"><path d="%s"/></svg>', caminho)
+}
+cartao <- function(classe, tipo, numero, rotulo, detalhe) {
+  sprintf(
+    '<div class="cartao %s"><div class="cartao-topo">%s<span class="cartao-rotulo">%s</span></div><p class="cartao-numero">%s</p><p class="cartao-detalhe">%s</p></div>',
+    classe, icone(tipo), rotulo, numero, detalhe
+  )
+}
+
+n_div <- veredito$divergencias
+n_exp <- veredito$explicadas
+cat('<p class="veredito-frase">', veredito$texto, '.</p>\n', sep = "")
+cat('<div class="cartoes" role="list">\n')
+cat(cartao("cartao-ok", "ok", inteiro(veredito$conferidos), "Conferem",
+  "dentro da tolerância"), "\n")
+cat(cartao("cartao-info", "info", inteiro(n_exp), "Explicadas",
+  "fora da tolerância, com causa conhecida"), "\n")
+# "Pendentes" e não "Sem explicação": com zero, o ícone de ok ao lado de "Sem
+# explicação" seria lido como "✓ sem explicação".
+if (n_div > 0) {
+  cat(cartao("cartao-erro", "erro", inteiro(n_div), "Pendentes",
+    "sem causa conhecida; precisam de revisão antes de publicar"), "\n")
+} else {
+  cat(cartao("cartao-ok", "ok", "0", "Pendentes",
+    "nenhum número ficou sem causa"), "\n")
+}
+cat(cartao("cartao-neutro", "total", inteiro(veredito$total), "No total",
+  "números comparados com o publicado"), "\n")
+cat('</div>\n')
+
+cat(sprintf(
+  '\n<p class="nota-veredito">Valores em reais de %s, corrigidos pelo IPCA. Tolerância combinada antes da conta: %s por valor em reais, %s para percentuais e nenhuma para contagens. Relatório gerado em %s.</p>\n',
+  precos, formatar_reais(tol$reais), pontos(tol$pontos_percentuais),
+  format(Sys.time(), "%d/%m/%Y às %H:%M")
+))
+
+if (n_div > 0) {
+  cat(sprintf(
+    '\n::: {.callout-warning appearance="simple"}\n## O que fazer agora\n%s sem explicação. A lista com o valor obtido, o publicado e o encaminhamento está em [O que precisa de atenção](#atencao).\n:::\n',
+    ifelse(n_div == 1, "Um número não bateu com o publicado e ficou", paste(inteiro(n_div), "números não bateram com o publicado e ficaram"))
+  ))
+} else {
+  cat('\n::: {.callout-tip appearance="simple"}\n## Nada pendente\nTodos os números conferem ou têm a diferença explicada.\n:::\n')
+}
+```
+
+Esta conferência refez em R, sem usar o `r referencia`, as contas do orçamento de juventude publicadas `r publicacoes`. Cada número calculado aqui foi posto lado a lado com o valor já publicado, chamado neste relatório de **gabarito**. A tolerância de cada comparação foi fixada antes de rodar a conta, para que ninguém ajuste o critério depois de ver o resultado. Diferença fora da tolerância não é corrigida em silêncio: aparece abaixo, com a causa provável e o que fazer.
+
+## O que precisa de atenção {#atencao}
+
+```{r}
+#| label: atencao
+#| output: asis
+# Cada número que pede atenção vira um cartão com os mesmos campos, legível
+# igual no celular, no computador e no papel (uma tabela larga esconderia a
+# causa e o que fazer na tela estreita).
+dados_cartao <- function(d) {
+  sprintf(
+    '<dl class="divergencia-dados"><dt>Valor calculado em R</dt><dd>%s</dd><dt>Gabarito (valor de referência)</dt><dd>%s</dd><dt>Diferença</dt><dd>%s (tolerância: %s)</dd><dt>Fonte do gabarito</dt><dd>%s</dd>',
+    d$valor_r_txt, d$gabarito_txt, d$diferenca_txt, d$tolerancia_txt, htmltools::htmlEscape(d$fonte)
+  )
+}
+# Número que confere, mas tem nota em causas_conhecidas.yml (campo nota):
+# aparece dentro do cartão da linha indicada em junto_de, ou sozinho.
+bloco_ressalva <- function(r) {
+  sprintf(
+    '<div class="divergencia-relacionada"><p class="relacionada-titulo">%s Número relacionado: %s</p>%s<dt>Situação</dt><dd>%s</dd></dl><p class="relacionada-nota"><strong>Atenção:</strong> %s</p></div>',
+    icone("ok"), htmltools::htmlEscape(r$descricao), dados_cartao(r), r$situacao, htmltools::htmlEscape(r$nota)
+  )
+}
+cartao_linha <- function(d, classe, tipo, relacionadas = NULL) {
+  extra <- if (!is.null(relacionadas) && nrow(relacionadas) > 0) {
+    paste(vapply(seq_len(nrow(relacionadas)), function(j) bloco_ressalva(relacionadas[j, ]), character(1)), collapse = "")
+  } else ""
+  sprintf(
+    '<div class="cartao-divergencia %s"><p class="divergencia-titulo">%s %s</p>%s<dt>Causa provável</dt><dd>%s</dd><dt>O que fazer</dt><dd>%s</dd></dl>%s</div>\n',
+    classe, icone(tipo), htmltools::htmlEscape(d$descricao), dados_cartao(d),
+    htmltools::htmlEscape(coalesce(d$provavel_causa, "ainda não identificada")),
+    htmltools::htmlEscape(coalesce(d$encaminhamento, sprintf("pendente de decisão (%s)", responsavel))),
+    extra
+  )
+}
+
+divergentes <- div_fmt |> filter(status == "diverge")
+if (nrow(divergentes) == 0) {
+  cat("Nenhum número ficou fora da tolerância sem explicação.\n\n")
+} else {
+  cat("Estes números ficaram fora da tolerância e ainda não têm causa conhecida. Cada um precisa de uma decisão antes que o número vá para um texto.\n\n")
+  for (i in seq_len(nrow(divergentes))) cat(cartao_linha(divergentes[i, ], "", "erro"))
+}
+```
+
+### Diferenças com causa conhecida
+
+```{r}
+#| label: explicadas
+#| output: asis
+explicadas <- div_fmt |> filter(status == "explicada")
+# Linhas com nota que não são explicadas (em geral, conferem): vão dentro do
+# cartão indicado em junto_de ou, sem ele, em um cartão próprio no fim.
+com_nota <- div_fmt |> filter(!is.na(nota), status != "explicada")
+if (nrow(explicadas) == 0) {
+  cat("Nenhuma diferença precisou de explicação nesta rodada.\n\n")
+} else {
+  cat(sprintf("%s fora da tolerância por um motivo já conhecido e documentado. Causa marcada com \"(inferido)\" é hipótese, ainda não confirmada na fonte.\n\n",
+    ifelse(nrow(explicadas) == 1, "Este número ficou", paste("Estes", inteiro(nrow(explicadas)), "números ficaram"))))
+  for (i in seq_len(nrow(explicadas))) {
+    d <- explicadas[i, ]
+    cat(cartao_linha(d, "cartao-explicada", "info",
+                     relacionadas = filter(com_nota, coalesce(junto_de, "") == d$id)))
+  }
+}
+soltas <- com_nota |> filter(!coalesce(junto_de, "") %in% explicadas$id)
+if (nrow(soltas) > 0) {
+  cat("\nEstes números conferem, mas têm uma ressalva registrada:\n\n")
+  for (i in seq_len(nrow(soltas))) {
+    cat('<div class="cartao-divergencia cartao-explicada">', bloco_ressalva(soltas[i, ]), '</div>\n', sep = "")
+  }
+}
+```
+
+## Como ler as conferências {#como-ler}
+
+Cada linha da conferência compara **um número calculado em R** com **o mesmo número já publicado** (nas checagens internas, com o valor que a própria base exige). A comparação tem três resultados possíveis:
+
+- **✓ Confere**: a diferença ficou dentro da tolerância.
+- **ⓘ Explicada**: a diferença passou da tolerância, mas a causa é conhecida e está escrita na linha (por exemplo, o texto publicado usa uma versão mais antiga da base).
+- **✗ Diverge**: a diferença passou da tolerância e ninguém sabe ainda por quê. Esse número não deve ir para nenhum texto antes de ser revisto.
+
+As tolerâncias são as mesmas para todo o relatório, decididas antes da conta: **`r formatar_reais(tol$reais)`** para valores em reais, **`r pontos(tol$pontos_percentuais)`** para percentuais (cobre arredondamentos da série publicada) e **nenhuma** para contagens, como número de programas e de ações, e para listas, como a ordem dos anos de maior valor.
+
+As conferências se agrupam pela fonte do gabarito, na ordem de autoridade das fontes combinada antes da conta (definida em `config/config.yml`). A última família reúne as checagens que não dependem de número publicado.
+
+```{r}
+#| label: familias
+#| output: asis
+# Uma seção por família, com o que foi comparado, com o quê, a tolerância, o
+# que fazer se divergir e o resultado nesta rodada. Os textos vêm de
+# config.yml; a tolerância sai das unidades dos números da família, para
+# quem abre direto uma família saber quanto de diferença é aceito.
+secao_familia <- function(titulo, o_que, com_o_que, se_divergir, chave) {
+  cat(sprintf("\n### %s\n\n", titulo))
+  cat(sprintf("- **O que foi comparado:** %s\n", o_que))
+  cat(sprintf("- **Com o quê:** %s\n", com_o_que))
+  cat(sprintf("- **Tolerância:** %s\n", tolerancia_familia(chave)))
+  cat(sprintf("- **Se divergir:** %s\n\n", se_divergir))
+  cat(resultado_familia(chave), "\n\n")
+}
+for (f in FAMILIAS) {
+  secao_familia(f$titulo, f$o_que, f$com_o_que, f$se_divergir, f$chave)
+}
+if (any(div_fmt$familia == "outras")) {
+  outras_fontes <- unique(sub("[,;].*$", "", div_fmt$fonte[div_fmt$familia == "outras"]))
+  secao_familia(
+    "Outras fontes",
+    "números publicados cuja fonte não está entre as famílias definidas em `config/config.yml`.",
+    paste0("as fontes citadas em cada linha (", paste(sprintf("`%s`", outras_fontes), collapse = ", "), ")."),
+    "ler a fonte citada na linha para ver se o número usa outro recorte ou outro ano de referência.",
+    "outras"
+  )
+}
+obrigatorias_txt <- if (length(acoes_obrigatorias) > 0) {
+  sprintf("as ações obrigatórias da configuração (%s) estão presentes", lista_e(sprintf("`%s`", acoes_obrigatorias)))
+} else {
+  "nenhuma ação obrigatória foi configurada"
+}
+secao_familia(
+  "Checagens internas",
+  sprintf(paste0(
+    "propriedades que não dependem de um número publicado. A base da União é idêntica nas duas safras de %d a %d; ",
+    "as duas safras do recorte de juventude só diferem nos anos já medidos e explicados; o recorte cobre todas as linhas; ",
+    "%s; o total de cada fase é o mesmo somado por quatro caminhos (linhas, anos, grupos de despesa e ações); ",
+    "o fator do IPCA de %s é o esperado na configuração (esta linha é um registro: com outro fator, a conferência para com erro antes de chegar aqui)."),
+    ano_ini, ultimo_antiga, obrigatorias_txt, cfg$ipca$ano_conferido),
+  "com a própria base, recalculada por outro caminho, e com a configuração.",
+  "uma checagem interna que falha indica erro de leitura ou de filtro nesta conferência, não no texto publicado. Ela deve ser resolvida antes de olhar as outras famílias.",
+  "internas"
+)
+```
+
+## Todas as conferências {#todas}
+
+```{r}
+#| label: frase-todas
+#| output: asis
+cat(sprintf(
+  "A lista completa tem %s linhas, com as que pedem atenção primeiro. %s O mesmo conteúdo está em `saidas/divergencias.csv`.\n",
+  inteiro(nrow(div_fmt)),
+  if (tem_reactable) "Use a caixa de busca para achar um ano, uma fase ou uma fonte." else ""
+))
+```
+
+```{r}
+#| label: tabela-todas
+base_todas <- div_fmt |>
+  arrange(ordem_status, familia, id) |>
+  mutate(
+    # A fonte vai junto da descrição e a tolerância junto da diferença, para a
+    # tabela caber na largura da página sem rolar para o lado no computador.
+    # A nota de uma ressalva (causas_conhecidas.yml) vai junto da descrição.
+    conferido = sprintf("%s%s (fonte: %s)", descricao,
+                        ifelse(is.na(nota), "", paste0(". Atenção: ", nota)), fonte),
+    diferenca_tol = sprintf("%s (%s)", diferenca_txt, tolerancia_txt)
+  )
+
+# Fundo colorido reforça o ícone e o texto da situação (nunca só a cor).
+colorir_situacao <- function(g) {
+  g |>
+    tab_style(cell_fill("#fbeaea"), cells_body(rows = startsWith(`Situação`, "✗"))) |>
+    tab_style(cell_fill("#e8f0fb"), cells_body(rows = startsWith(`Situação`, "ⓘ")))
+}
+
+# Tela larga: uma coluna para cada valor.
+gt_todas <- base_todas |>
+  transmute(
+    `Situação` = situacao,
+    `O que foi conferido (fonte do gabarito)` = conferido,
+    `Calculado em R` = valor_r_txt,
+    `Gabarito` = gabarito_txt,
+    `Diferença (tolerância)` = diferenca_tol
+  ) |>
+  gt(locale = "pt-BR") |>
+  tabela_base() |>
+  cols_align("right", columns = c(`Calculado em R`, `Gabarito`, `Diferença (tolerância)`)) |>
+  cols_width(
+    `Situação` ~ px(112), `O que foi conferido (fonte do gabarito)` ~ px(222),
+    `Calculado em R` ~ px(186), `Gabarito` ~ px(186), `Diferença (tolerância)` ~ px(150)
+  ) |>
+  colorir_situacao()
+
+# Tela estreita e papel: duas colunas, com a situação e os três valores
+# empilhados na mesma célula, para a tabela caber na largura do celular sem
+# esconder nenhum valor.
+gt_todas_empilhada <- base_todas |>
+  transmute(
+    `Situação` = situacao,
+    `O que foi conferido (fonte do gabarito)` = conferido,
+    calculado = paste("Calculado em R:", valor_r_txt),
+    gabarito = paste("Gabarito:", gabarito_txt),
+    diferenca = paste("Diferença:", diferenca_tol)
+  ) |>
+  gt(locale = "pt-BR") |>
+  tabela_base() |>
+  cols_merge(columns = c(`Situação`, calculado, gabarito, diferenca),
+             pattern = "<strong>{1}</strong><br>{2}<br>{3}<br>{4}") |>
+  cols_label(`Situação` = "Situação e valores") |>
+  cols_move_to_end(`Situação`) |>
+  cols_width(`O que foi conferido (fonte do gabarito)` ~ px(150), `Situação` ~ px(190)) |>
+  colorir_situacao()
+
+# Na tela, as versões pesquisáveis (a larga ou a empilhada, conforme a largura
+# da tela, por estilo.scss); no papel, a empilhada estática, porque a
+# paginação da tabela interativa imprimiria só a página visível.
+htmltools::tagList(
+  htmltools::div(class = "so-tela so-largo", interativa(gt_todas, 15)),
+  htmltools::div(class = "so-tela so-estreito", interativa(gt_todas_empilhada, 10)),
+  htmltools::div(class = "so-impressao impressao-todas", gt_todas_empilhada)
+)
+```
+
+## A série de `r ano_ini` a `r ano_fim` {#serie}
+
+```{r}
+#| label: dados-serie
+# Uma escala para a série inteira (gráfico, título e tabela), escolhida pelo
+# maior valor: bilhões ou milhões.
+ESCALA_SERIE <- escala_de(totais_ano$real)
+serie <- totais_ano |>
+  mutate(fase = factor(fase, levels = FASES, labels = NOMES_FASES[FASES]), real_esc = real / ESCALA_SERIE$divisor)
+
+dot <- totais_ano |> filter(fase == "dotacao_atual")
+ano_pico <- dot$ano[which.max(dot$real)]
+valor_pico <- max(dot$real)
+valor_fim <- dot$real[dot$ano == ano_fim]
+variacao_fim <- 100 * (valor_fim / valor_pico - 1)
+
+titulo_serie <- if (ano_pico == ano_fim) {
+  sprintf("A dotação atual para juventude chegou ao maior valor da série em %d: %s",
+    ano_fim, em_escala(valor_fim, ESCALA_SERIE, 1))
+} else {
+  sprintf("A dotação atual para juventude teve o maior valor em %d (%s); em %d ficou %s%% %s do pico",
+    ano_pico, em_escala(valor_pico, ESCALA_SERIE, 1), ano_fim,
+    formatC(abs(variacao_fim), format = "f", digits = 0, decimal.mark = ","),
+    ifelse(variacao_fim < 0, "abaixo", "acima"))
+}
+
+# O texto alternativo descreve o gráfico para quem usa leitor de tela; a frase
+# sobre o pago só aparece se os dados a confirmarem.
+pago_abaixo <- totais_ano |>
+  filter(fase %in% c("pago", "dotacao_atual")) |>
+  select(ano, fase, real) |>
+  pivot_wider(names_from = fase, values_from = real) |>
+  with(all(pago <= dotacao_atual))
+# A fonte dos dados vem da configuração (relatorio: fonte_dados).
+legenda_grafico <- sprintf(
+  "Fonte: %s, recorte de juventude do arquivo %s (safra nova); correção pelo IPCA com os fatores de %s. Cálculo desta conferência em R.",
+  fonte_dados, basename(cfg$caminhos$juventude_nova), basename(cfg$caminhos$ipca)
+)
+alt_serie <- sprintf(
+  "Gráfico de linhas com seis fases da despesa de juventude, de %d a %d, em %s de reais de %s. %s.%s Os mesmos números estão na tabela que vem em seguida.",
+  ano_ini, ano_fim, tolower(ESCALA_SERIE$nome), precos, titulo_serie,
+  if (isTRUE(pago_abaixo)) " Em todos os anos o pago fica abaixo da dotação atual." else ""
+)
+```
+
+Os valores abaixo são a soma das linhas do recorte de juventude em cada ano, corrigidos pela inflação até `r precos`. A correção usa o IPCA acumulado de cada ano até a data de referência, para que um real de `r ano_ini` e um real de `r ano_fim` possam ser comparados.
+
+```{r}
+#| label: funcao-grafico
+# Rótulos no fim das linhas, afastados entre si para não se sobreporem
+# (as fases empenhado, liquidado e pago andam muito próximas).
+espalhar <- function(y, distancia) {
+  o <- order(y)
+  ys <- y[o]
+  for (i in seq_along(ys)[-1]) ys[i] <- max(ys[i], ys[i - 1] + distancia)
+  ys <- ys - (mean(ys) - mean(y[o]))
+  for (i in seq_along(ys)[-1]) ys[i] <- max(ys[i], ys[i - 1] + distancia)
+  out <- y
+  out[o] <- ys
+  out
+}
+
+# Paleta categórica validada (ordem fixa), escurecida o suficiente para que
+# os rótulos coloridos tenham contraste sobre o fundo branco.
+cores_fases <- setNames(
+  c("#1f63b5", "#c4501f", "#0e7a55", "#8a5d00", "#b0306a", "#5b4ac0"),
+  NOMES_FASES[FASES]
+)
+
+# O mesmo gráfico em dois formatos: largo para tela grande e papel, estreito
+# e mais alto para celular, onde a versão larga ficaria com letra miúda.
+grafico_serie <- function(base, largura_titulo, passo_anos, folga_rotulo, tamanho_rotulo, espaco_rotulo) {
+  finais <- serie |>
+    filter(ano == ano_fim) |>
+    mutate(y_rotulo = espalhar(real_esc, diff(range(serie$real_esc)) * espaco_rotulo))
+  ggplot(serie, aes(ano, real_esc, colour = fase)) +
+    geom_line(linewidth = 0.9) +
+    geom_point(data = finais, size = 1.8) +
+    geom_segment(
+      data = finais,
+      aes(x = ano + 0.15, xend = ano + 0.55, y = real_esc, yend = y_rotulo),
+      linewidth = 0.3
+    ) +
+    geom_text(
+      data = finais,
+      aes(x = ano + 0.65, y = y_rotulo, label = fase),
+      hjust = 0, size = tamanho_rotulo, fontface = "bold"
+    ) +
+    scale_colour_manual(values = cores_fases, guide = "none") +
+    scale_x_continuous(
+      breaks = seq(ano_ini, ano_fim, by = passo_anos),
+      expand = expansion(mult = c(0.01, folga_rotulo))
+    ) +
+    scale_y_continuous(
+      # Rótulos na escala da série ("R$ 10 bi" ou "R$ 100 mi"), com casas
+      # decimais só quando o intervalo entre as marcas pede.
+      labels = scales::label_number(prefix = "R$ ", suffix = paste0(" ", ESCALA_SERIE$sufixo), big.mark = ".", decimal.mark = ","),
+      limits = c(0, NA),
+      expand = expansion(mult = c(0, 0.05))
+    ) +
+    coord_cartesian(clip = "off") +
+    labs(
+      title = stringr::str_wrap(titulo_serie, largura_titulo),
+      subtitle = stringr::str_wrap(sprintf("%s de reais de %s, corrigidos pelo IPCA", ESCALA_SERIE$nome, precos), largura_titulo + 6),
+      x = NULL, y = NULL
+    ) +
+    theme_minimal(base_size = base) +
+    theme(
+      plot.title = element_text(face = "bold", size = base + 1, colour = "#1a1a1a", margin = margin(b = 4)),
+      plot.subtitle = element_text(colour = "#4a4a4a", margin = margin(b = 10)),
+      plot.title.position = "plot",
+      axis.text = element_text(colour = "#4a4a4a"),
+      panel.grid.minor = element_blank(),
+      panel.grid.major.x = element_blank(),
+      panel.grid.major.y = element_line(colour = "#e3e3e3", linewidth = 0.4),
+      plot.margin = margin(8, 12, 8, 8)
+    )
+}
+```
+
+::: {.grafico-largo}
+
+```{r}
+#| label: grafico-serie
+#| fig-alt: !expr alt_serie
+#| fig-cap: !expr legenda_grafico
+grafico_serie(base = 13, largura_titulo = 62, passo_anos = 4, folga_rotulo = 0.24, tamanho_rotulo = 3.6, espaco_rotulo = 0.055)
+```
+
+:::
+
+::: {.grafico-estreito}
+
+```{r}
+#| label: grafico-serie-celular
+#| fig-width: 4.2
+#| fig-height: 5.6
+#| fig-alt: !expr alt_serie
+#| fig-cap: !expr legenda_grafico
+grafico_serie(base = 12, largura_titulo = 36, passo_anos = 5, folga_rotulo = 0.42, tamanho_rotulo = 3.3, espaco_rotulo = 0.065)
+```
+
+:::
+
+```{r}
+#| label: frase-serie
+#| output: asis
+tp <- totais_periodo |> mutate(fase = as.character(fase))
+dot_periodo <- tp$real[tp$fase == "dotacao_atual"]
+media_dot <- tp$media_anual_real[tp$fase == "dotacao_atual"]
+taxa_total <- taxa_execucao$taxa_pct[is.na(taxa_execucao$ano)]
+cat(sprintf(
+  "No período inteiro, a dotação atual somou **%s** (média de %s por ano). Do que foi autorizado, %s foi empenhado (taxa de execução do período). Os quatro anos de maior dotação atual foram %s.\n",
+  em_escala(dot_periodo, ESCALA_SERIE), em_escala(media_dot, ESCALA_SERIE), formatar_pct(taxa_total, 1),
+  paste(ranking_anos, collapse = ", ")
+))
+```
+
+<details class="detalhe-tabela">
+<summary>Ver os números do gráfico (tabela)</summary>
+
+```{r}
+#| label: tabela-serie
+totais_ano |>
+  select(ano, fase, real) |>
+  mutate(fase = factor(fase, levels = FASES)) |>
+  arrange(fase) |>
+  pivot_wider(names_from = fase, values_from = real) |>
+  arrange(ano) |>
+  gt(locale = "pt-BR") |>
+  tabela_base() |>
+  cols_label(ano = "Ano", .list = as.list(NOMES_FASES[FASES])) |>
+  fmt(columns = -ano, fns = function(x) em_escala(x, ESCALA_SERIE)) |>
+  fmt(columns = ano, fns = as.character) |>
+  tab_source_note(sprintf("%s de reais de %s, com %s casas decimais.", ESCALA_SERIE$nome, precos, casas_texto(ESCALA_SERIE))) |>
+  com_dica()
+```
+
+</details>
+
+## Participação no gasto do Executivo {#participacao}
+
+A participação compara o que foi **empenhado** para juventude com o que o Poder Executivo inteiro empenhou no mesmo ano, nos grupos de despesa `r lista_e(cfg$denominador$gnd_incluidos)` (ver GND no [glossário](#glossario)). Ficam de fora `r texto_cfg("exclusoes_denominador", "os órgãos que não são do Poder Executivo")`. A lista de órgãos excluídos está em `config/config.yml`. As duas partes da conta estão em valores do próprio ano, então a correção pela inflação não muda o resultado.
+
+```{r}
+#| label: frase-participacao
+#| output: asis
+est <- participacao |> filter(estimado)
+if (nrow(est) > 0) {
+  cat(sprintf(
+    "Em %s o gasto do Executivo é **estimado**: a base nova da União só traz o total por grupo de despesa, sem separar os órgãos, e a base antiga tem esse ano só em parte. A conferência calcula na base antiga a fração do Executivo no total da União naquele mesmo ano, fase a fase, e aplica essa fração ao total da base nova, o mesmo método usado pelo %s.\n",
+    paste(est$ano, collapse = ", "), referencia
+  ))
+}
+```
+
+```{r}
+#| label: tabela-participacao
+# Uma escala para a tabela inteira, pela maior coluna (bilhões ou milhões).
+esc_part <- escala_de(c(participacao$empenhado_juventude, participacao$empenhado_executivo))
+participacao |>
+  arrange(ano) |>
+  transmute(
+    `Ano` = as.character(ano),
+    `Empenhado de juventude` = em_escala(empenhado_juventude, esc_part),
+    `Empenhado do Executivo` = em_escala(empenhado_executivo, esc_part),
+    `Participação` = formatar_pct(participacao_pct, 2),
+    `Executivo estimado?` = ifelse(estimado, "Sim", "Não")
+  ) |>
+  gt(locale = "pt-BR") |>
+  tabela_base() |>
+  cols_align("right", columns = c(`Empenhado de juventude`, `Empenhado do Executivo`, `Participação`)) |>
+  tab_source_note(sprintf("Valores nominais (do próprio ano), em %s de reais.", tolower(esc_part$nome))) |>
+  com_dica()
+```
+
+## Duas safras da base e o teste do recorte {#safras}
+
+A base de dados (fonte: `r fonte_dados`) foi extraída em duas datas, e cada extração é chamada aqui de **safra**. A **safra antiga** foi extraída `r texto_cfg("safra_antiga", "antes")`; a **safra nova**, `r texto_cfg("safra_nova", "depois")`. As duas deveriam trazer os mesmos valores para os anos já encerrados, mas não trazem em todos os casos. Esta seção mostra onde elas diferem e por que a conferência usa cada uma.
+
+```{r}
+#| label: frase-por-que-safra-nova
+#| output: asis
+anos_linhas_a_mais <- sort(unique(diferencas_juventude$ano))
+periodo_linhas <- if (length(anos_linhas_a_mais) == 0) {
+  "Em nenhum ano"
+} else if (length(anos_linhas_a_mais) == 1) {
+  sprintf("Em %d", anos_linhas_a_mais)
+} else {
+  sprintf("De %d a %d", min(anos_linhas_a_mais), max(anos_linhas_a_mais))
+}
+cat(sprintf(
+  "**Por que o recorte de juventude vem da safra nova.** %s a safra nova tem linhas que a antiga não tem: ações trazidas por palavras-chave acrescentadas depois e ações incluídas à mão no recorte (a tabela mais abaixo mostra cada uma). Os números publicados usam a safra nova; usar a antiga deixaria essas linhas de fora e nenhum deles seria reproduzido. A diferença entre as safras entra na conferência como divergência explicada, e não como correção.\n",
+  periodo_linhas
+))
+```
+
+**Por que o gasto do Executivo vem da safra antiga.** A base nova da União só traz totais por grupo de despesa, sem o órgão. Sem o órgão não dá para separar o Executivo do Legislativo e do Judiciário. A base antiga tem o órgão, e nos anos de `r ano_ini` a `r ultimo_antiga` as duas são iguais ao centavo (tabela abaixo). Para `r ano_fim`, que a base antiga não traz completo, o valor é estimado.
+
+### Recorte de juventude: safra antiga e safra nova
+
+```{r}
+#| label: frase-safras-juventude
+#| output: asis
+cj <- comparacao_safras_juventude
+anos_iguais <- cj |> group_by(ano) |> summarise(igual = all(identico)) |> ungroup()
+anos_dif <- anos_iguais$ano[!anos_iguais$igual]
+cat(sprintf(
+  "De %d a %d, em **%d de %d anos** as duas safras têm o mesmo número de linhas e os mesmos valores, ao centavo, nas seis fases. %s\n",
+  min(cj$ano), max(cj$ano), sum(anos_iguais$igual), nrow(anos_iguais),
+  if (length(anos_dif) > 0) sprintf("Os anos com diferença são %s. A tabela mostra a dotação atual.", paste(anos_dif, collapse = ", ")) else ""
+))
+```
+
+```{r}
+#| label: tabela-safras-juventude
+cj_dot <- cj |> filter(fase == "dotacao_atual") |> arrange(ano)
+# Uma escala para todas as colunas de valor, pelo maior valor da tabela; a
+# diferença ao centavo, por ação, está na tabela seguinte.
+esc_cj <- escala_de(c(cj_dot$valor_nova, cj_dot$valor_antiga))
+cj_dot |>
+  transmute(
+    `Ano` = as.character(ano),
+    `Safra nova` = em_escala(valor_nova, esc_cj),
+    `Safra antiga` = em_escala(valor_antiga, esc_cj),
+    `Diferença` = em_escala(diferenca, esc_cj),
+    `Linhas (nova)` = inteiro(n_linhas_nova),
+    `Linhas (antiga)` = inteiro(n_linhas_antiga),
+    `Situação` = ifelse(identico, "✓ Iguais", "≠ Diferentes")
+  ) |>
+  gt(locale = "pt-BR") |>
+  tabela_base() |>
+  cols_align("right", columns = -c(`Ano`, `Situação`)) |>
+  tab_source_note(sprintf("Dotação atual em valores nominais, em %s de reais. A situação considera o valor e o número de linhas; a diferença ao centavo, por ação, está na tabela seguinte.", tolower(esc_cj$nome))) |>
+  com_dica()
+```
+
+```{r}
+#| label: frase-diferencas
+#| output: asis
+if (nrow(diferencas_juventude) > 0) {
+  cat(sprintf(
+    "\nAs diferenças vêm de %s ações. A tabela mostra, por ano e ação, quantas linhas cada safra tem e a palavra-chave que trouxe a ação para o recorte (vazio quando a ação foi incluída à mão).\n",
+    inteiro(n_distinct(diferencas_juventude$acao_cod))
+  ))
+}
+```
+
+```{r}
+#| label: tabela-diferencas
+if (nrow(diferencas_juventude) > 0) {
+  g <- diferencas_juventude |>
+    arrange(ano, programa_cod, acao_cod) |>
+    transmute(
+      `Ano` = as.character(ano),
+      `Programa` = programa_cod,
+      `Ação` = acao_cod,
+      `Linhas (nova)` = inteiro(n_linhas_nova),
+      `Linhas (antiga)` = inteiro(n_linhas_antiga),
+      `Dotação atual (nova)` = formatar_reais(dotacao_atual_nova),
+      `Dotação atual (antiga)` = formatar_reais(dotacao_atual_antiga),
+      `Diferença` = formatar_reais(diferenca),
+      `Palavra-chave` = coalesce(palavras_chave, "inclusão manual")
+    ) |>
+    gt(locale = "pt-BR") |>
+    tabela_base() |>
+    cols_align("right", columns = c(starts_with("Linhas"), starts_with("Dotação"), `Diferença`)) |>
+    tab_source_note("Dotação atual em valores nominais, em reais.")
+  if (nrow(diferencas_juventude) > 15) {
+    htmltools::tagList(
+      htmltools::p(class = "dica-rolagem so-tela", "Arraste a tabela para o lado para ver todas as colunas."),
+      htmltools::div(class = "so-tela", interativa(g, 10)),
+      htmltools::div(class = "so-impressao", g)
+    )
+  } else {
+    com_dica(g)
+  }
+}
+```
+
+### Base da União: safra antiga e safra nova
+
+```{r}
+#| label: frase-safras-uniao
+#| output: asis
+cu <- comparacao_safras_uniao
+uniao_anos <- cu |> group_by(ano) |> summarise(igual = all(identico)) |> ungroup()
+ate <- uniao_anos |> filter(ano <= ultimo_antiga)
+cat(sprintf(
+  "De %d a %d, em **%d de %d anos** o total da União é igual nas duas safras, ao centavo, nas seis fases. Por isso a base antiga, que tem o órgão, pode ser usada para o denominador nesses anos.",
+  min(ate$ano), max(ate$ano), sum(ate$igual), nrow(ate)
+))
+# Depois do último ano completo, a safra antiga está incompleta. As fases
+# fixadas no começo do ano (projeto de lei, dotação inicial) podem sair iguais
+# e as da execução, diferentes: o texto diz quais, a partir dos dados.
+depois <- cu |> filter(ano > ultimo_antiga)
+if (nrow(depois) > 0) {
+  for (a in sort(unique(depois$ano))) {
+    da <- depois |> filter(ano == a) |> arrange(match(fase, FASES))
+    difs <- unname(NOMES_FASES[da$fase[!da$identico]])
+    iguais <- unname(NOMES_FASES[da$fase[da$identico]])
+    cat(sprintf(" Em %d a safra antiga está incompleta: %s.", a,
+      if (length(iguais) == 0) {
+        "as seis fases diferem, o que é esperado"
+      } else if (length(difs) == 0) {
+        "mesmo assim as seis fases saíram iguais"
+      } else {
+        sprintf("%s %s, o que é esperado; %s %s iguais nas duas safras, porque são fixados no começo do ano",
+          tolower(lista_e(difs)), ifelse(length(difs) == 1, "difere", "diferem"),
+          tolower(lista_e(iguais)), ifelse(length(iguais) == 1, "ficou", "ficaram"))
+      }))
+  }
+  cat("\n")
+} else {
+  cat("\n")
+}
+```
+
+```{r}
+#| label: tabela-safras-uniao
+dif_uniao <- cu |> filter(!identico) |> arrange(ano, match(fase, FASES))
+if (nrow(dif_uniao) > 0) {
+  esc_uniao <- escala_de(c(dif_uniao$valor_consolidada, dif_uniao$valor_nova))
+  dif_uniao |>
+    transmute(
+      `Ano` = as.character(ano),
+      `Fase` = unname(NOMES_FASES[as.character(fase)]),
+      `Safra antiga` = em_escala(valor_consolidada, esc_uniao),
+      `Safra nova` = em_escala(valor_nova, esc_uniao),
+      `Diferença` = em_escala(diferenca, esc_uniao)
+    ) |>
+    gt(locale = "pt-BR") |>
+    tabela_base() |>
+    cols_align("right", columns = c(`Safra antiga`, `Safra nova`, `Diferença`)) |>
+    tab_source_note(sprintf("União inteira, todos os grupos de despesa, valores nominais, em %s de reais. Só aparecem as linhas em que as safras diferem.", tolower(esc_uniao$nome))) |>
+    com_dica()
+}
+```
+
+### Por que o recorte não é refeito sobre a base da União
+
+Uma forma de conferir o recorte de juventude seria pegar a lista de ações e procurá-las na base da União. O teste abaixo mostra que isso não funciona, e por isso a lista de ações entra como **arquivo de entrada** (`entradas/recorte_acoes.csv`), e não é recalculada.
+
+- **Procurando só pelo código da ação**, sobra dinheiro já no primeiro ano: há ações genéricas (como as de administração) que aparecem em vários programas, e a base da União soma todas elas.
+- **Procurando pelo programa e pela ação juntos**, o valor pode bater nos primeiros anos e passar a sobrar depois, quando o recorte original passa a escolher linhas também por campos que a base da União não tem, como o objetivo do plano plurianual (inferido).
+
+```{r}
+#| label: frase-recorte-uniao
+#| output: asis
+# Os anos depois do último ano completo da safra antiga ficam de fora: lá a
+# base da União está incompleta e a comparação não diria nada.
+ru <- recorte_na_uniao |> filter(ano <= ultimo_antiga) |> arrange(ano)
+fora_ru <- sort(unique(recorte_na_uniao$ano[recorte_na_uniao$ano > ultimo_antiga]))
+tol_r <- tol$reais
+anos_batem <- ru$ano[abs(ru$excesso_programa_acao) <= tol_r]
+primeiro_sobra <- ru$ano[abs(ru$excesso_programa_acao) > tol_r]
+cat(sprintf(
+  "Nesta rodada, por programa e ação o valor bate (até %s) em %s; %s.%s\n",
+  formatar_reais(tol_r),
+  if (length(anos_batem) > 0) sprintf("%d anos, de %d a %d", length(anos_batem), min(anos_batem), max(anos_batem)) else "nenhum ano",
+  if (length(primeiro_sobra) > 0) sprintf("a sobra começa em %d", min(primeiro_sobra)) else "não há sobra em nenhum ano",
+  if (length(fora_ru) > 0) sprintf(" A tabela vai até %d: em %s a base antiga da União está incompleta e a comparação não serve.",
+    ultimo_antiga, paste(fora_ru, collapse = ", ")) else ""
+))
+```
+
+```{r}
+#| label: tabela-recorte-uniao
+esc_ru <- escala_de(c(ru$valor_juventude, ru$excesso_acao, ru$excesso_programa_acao))
+ru |>
+  transmute(
+    `Ano` = as.character(ano),
+    `Recorte de juventude` = em_escala(valor_juventude, esc_ru),
+    `Sobra (só ação)` = em_escala(excesso_acao, esc_ru),
+    `Sobra (programa e ação)` = em_escala(excesso_programa_acao, esc_ru)
+  ) |>
+  gt(locale = "pt-BR") |>
+  tabela_base() |>
+  cols_align("right", columns = -`Ano`) |>
+  tab_source_note(sprintf("Dotação atual, valores nominais, em %s de reais. Sobra é o que a base da União soma a mais que o recorte de juventude.", tolower(esc_ru$nome))) |>
+  com_dica()
+```
+
+### O recorte em números
+
+```{r}
+#| label: tabela-resumo-recorte
+rr <- resumo_recorte
+ausentes <- rr$obrigatorias_ausentes
+contagem_rr <- tibble::tibble(
+  Item = c(
+    "Linhas da base de juventude", "Linhas depois de aplicar a lista de ações", "Linhas removidas",
+    "Ações na lista do recorte", "Ações presentes na base", "Ações da base fora da lista",
+    "Ações da lista sem nenhuma linha", "Ações incluídas à mão", "Ações obrigatórias ausentes",
+    "Programas no recorte", "Ações no recorte (com linha)"
+  ),
+  Valor = c(
+    inteiro(rr$linhas_antes), inteiro(rr$linhas_depois), inteiro(rr$linhas_removidas),
+    inteiro(rr$acoes_no_recorte), inteiro(rr$acoes_na_base), inteiro(rr$acoes_da_base_fora_do_recorte),
+    inteiro(rr$acoes_do_recorte_sem_linha), inteiro(rr$inclusoes_manuais),
+    ifelse(is.na(ausentes) | ausentes == "", "nenhuma", gsub("|", ", ", ausentes, fixed = TRUE)),
+    inteiro(contagens$n_programas), inteiro(contagens$n_acoes)
+  )
+)
+contagem_rr |>
+  gt(locale = "pt-BR") |>
+  tabela_base() |>
+  cols_align("right", columns = Valor) |>
+  cols_label(Item = "", Valor = "")
+```
+
+```{r}
+#| label: frase-concentracao
+#| output: asis
+lim <- cfg$concentracao$limiar
+cat(sprintf(
+  "\nO gasto é concentrado: bastam **%s programas** para somar %s da dotação atual do período (pelo valor pago, bastam %s).\n",
+  inteiro(concentracao$n_ate_limiar), formatar_pct(100 * lim, 0), inteiro(concentracao$n_ate_limiar_pago)
+))
+```
+
+## Como este relatório foi feito {#como-foi-feito}
+
+**Ferramentas.** As contas foram feitas na linguagem R. O pacote `targets` organiza o trabalho em etapas e só refaz a etapa cujo arquivo de entrada mudou; o `duckdb` lê os arquivos de dados grandes; o `testthat` roda os testes automáticos; este relatório é gerado pelo Quarto. A conferência não usa nenhuma linha do `r referencia`: ela só lê os mesmos arquivos de dados.
+
+**Arquivos lidos.** A tabela traz cada arquivo usado, inclusive a configuração e as causas conhecidas, que também mudam o resultado, com o tamanho, a data da última alteração e a impressão digital (SHA-256), uma sequência que muda por completo se o arquivo mudar em um único caractere. Quem refizer a conferência pode comparar essa sequência para ter certeza de que usou os mesmos dados.
+
+```{r}
+#| label: tabela-procedencia
+# Tamanho em KB abaixo de 1 MB, para um arquivo pequeno não aparecer como
+# "0,0 MB".
+tamanho_texto <- function(bytes) {
+  ifelse(bytes < 1024^2,
+         paste(formatC(bytes / 1024, format = "f", digits = 1, big.mark = ".", decimal.mark = ","), "KB"),
+         paste(formatC(bytes / 1024^2, format = "f", digits = 1, big.mark = ".", decimal.mark = ","), "MB"))
+}
+procedencia |>
+  transmute(
+    `Arquivo` = rotulo_papel(papel),
+    `Nome do arquivo` = arquivo,
+    `Tamanho` = tamanho_texto(tamanho_bytes),
+    `Modificado em` = formatar_data(modificado_em),
+    `SHA-256` = sha256
+  ) |>
+  gt(locale = "pt-BR") |>
+  tabela_base() |>
+  cols_align("right", columns = `Tamanho`) |>
+  tab_style(style = cell_text(font = "ui-monospace, Consolas, monospace", size = px(12)), locations = cells_body(columns = `SHA-256`)) |>
+  tab_style(style = "overflow-wrap:anywhere; word-break:break-all;", locations = cells_body(columns = `SHA-256`)) |>
+  # Nome de arquivo quebra nos separadores (_ e .), e não letra a letra.
+  tab_style(style = "overflow-wrap:break-word; word-break:normal; min-width:9rem;", locations = cells_body(columns = `Nome do arquivo`)) |>
+  tab_source_note(sprintf("Registrado em %s.", formatar_data(max(procedencia$registrado_em)))) |>
+  com_dica()
+```
+
+**Regras fixadas antes da conta.** Tolerância de `r formatar_reais(tol$reais)` por valor em reais, `r pontos(tol$pontos_percentuais)` para percentuais e nenhuma para contagens. O fator do IPCA de `r cfg$ipca$ano_conferido` tem de ser `r numero_virgula(cfg$ipca$fator_esperado, 7)`; se a conferência encontrar o fator antigo (`r numero_virgula(cfg$ipca$fator_errado_conhecido, 7)`) ou qualquer outro, ela para com erro antes de deflacionar. Por isso a linha desse fator na lista completa é um registro do fator usado, e não uma checagem que possa sair diferente. As escolhas de método e o que foi descartado estão em `DECISOES.md`.
+
+**Versões.**
+
+```{r}
+#| label: tabela-versoes
+versao_quarto <- tryCatch(as.character(quarto::quarto_version()), error = function(e) NA_character_)
+if (is.na(versao_quarto) || !nzchar(versao_quarto)) versao_quarto <- Sys.getenv("QUARTO_VERSION", "não identificada")
+pacotes <- c("targets", "tarchetypes", "duckdb", "dplyr", "tidyr", "gt", "ggplot2", "testthat", "cli", "here", "reactable")
+versao_pacote <- function(p) {
+  if (requireNamespace(p, quietly = TRUE)) as.character(utils::packageVersion(p)) else "não instalado"
+}
+tibble::tibble(
+  Programa = c("R", "Quarto", pacotes),
+  `Versão` = c(paste(R.version$major, R.version$minor, sep = "."), versao_quarto, vapply(pacotes, versao_pacote, ""))
+) |>
+  gt(locale = "pt-BR") |>
+  tabela_base() |>
+  cols_align("right", columns = `Versão`)
+```
+
+**Como refazer.** Com o R e o Quarto instalados, abra um terminal na pasta do projeto e rode os comandos abaixo, nesta ordem. O primeiro, só uma vez em cada computador, instala as versões exatas dos pacotes registradas no arquivo `renv.lock`.
+
+```bash
+Rscript -e "renv::restore()"
+Rscript rodar.R
+```
+
+O segundo confere o ambiente, roda as etapas que mudaram, roda os testes e gera este relatório de novo, em quatro etapas numeradas. Para refazer tudo do zero, apagando os resultados guardados:
+
+```bash
+Rscript rodar.R --do-zero
+```
+
+O resultado de cada conferência também sai em planilha: `saidas/divergencias.csv` (uma linha por número comparado) e `saidas/procedencia.csv` (os arquivos lidos, com a impressão digital).
+
+## Glossário {#glossario}
+
+Projeto de lei
+:   Valor que o governo propôs no projeto de Lei Orçamentária Anual, antes da votação no Congresso.
+
+Dotação inicial
+:   Valor aprovado na Lei Orçamentária Anual, no início do ano.
+
+Dotação atual
+:   Valor autorizado ao fim do ano, depois dos créditos adicionais e cancelamentos feitos ao longo dele. É a medida usada para "orçamento" neste relatório.
+
+Empenho (empenhado)
+:   Primeira etapa do gasto: o governo reserva o dinheiro para uma despesa específica, como um contrato. A participação no gasto do Executivo usa esta fase.
+
+Liquidação (liquidado)
+:   Etapa em que o governo confirma que o serviço foi prestado ou o bem foi entregue e que, portanto, deve pagar.
+
+Pagamento (pago)
+:   Saída efetiva do dinheiro. Pode ficar para o ano seguinte (os "restos a pagar"), por isso o pago costuma ser menor que o empenhado.
+
+Taxa de execução
+:   Quanto do valor autorizado (dotação atual) foi empenhado.
+
+Deflação (valores reais)
+:   Correção dos valores pela inflação, para que reais de anos diferentes possam ser comparados. Aqui todos os valores reais estão em reais de `r precos`.
+
+IPCA
+:   Índice de Preços ao Consumidor Amplo, do IBGE: o índice oficial de inflação usado na correção.
+
+Safra
+:   Cada extração da base de dados, feita em uma data. Uma safra mais nova pode trazer linhas que a anterior não tinha.
+
+SIOP
+:   Sistema Integrado de Planejamento e Orçamento do governo federal, de onde vêm os dados.
+
+GND (grupo de natureza da despesa)
+:   Classificação do gasto pelo tipo: 1 é pessoal, 3 é custeio e outras despesas correntes, 4 é investimento, 5 é inversão financeira.
+
+Programa e ação
+:   O orçamento se organiza em programas (objetivos amplos de política pública) e ações (o que é feito dentro de cada programa). O recorte de juventude é uma lista de ações.
+
+Recorte de juventude
+:   O conjunto de linhas do orçamento federal que a equipe do projeto classificou como política de juventude, por palavra-chave ou por inclusão manual.
+
+Gabarito
+:   O valor de referência com o qual o número calculado em R é comparado. Em geral é o número já publicado; nas checagens internas, é o que a própria base exige, por exemplo diferença zero entre as duas safras da União.
+
+Tolerância
+:   A maior diferença aceita entre o valor calculado e o gabarito para considerar que os dois conferem.
+
+```{=html}
+<script>
+  // Na impressão, as tabelas recolhidas abrem sozinhas para não sumirem do papel.
+  window.addEventListener("beforeprint", function () {
+    document.querySelectorAll("details").forEach(function (d) { d.open = true; });
+  });
+  // O Quarto escreve o título do sumário lateral como h2, antes do h1 do
+  // relatório; leitores de tela anunciariam os títulos fora de ordem. O
+  // título vira um parágrafo com a mesma aparência.
+  document.addEventListener("DOMContentLoaded", function () {
+    var h = document.getElementById("toc-title");
+    if (!h || h.tagName !== "H2") return;
+    var p = document.createElement("p");
+    p.id = h.id;
+    p.className = h.className + " toc-titulo";
+    p.textContent = h.textContent;
+    h.replaceWith(p);
+  });
+</script>
+```

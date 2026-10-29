@@ -1,0 +1,25 @@
+# Causas conhecidas e verificadas ANTES de rodar, por id de checagem (o id de
+# config/gabaritos.csv ou de uma checagem estrutural). Dados sintéticos: as
+# causas abaixo descrevem os fenômenos que o gerador cria de propósito.
+#
+# Só são usadas quando o número cai fora da tolerância: dentro dela o status é
+# "confere" de qualquer jeito. Fora da tolerância, a linha vira "explicada" se
+# o id estiver aqui e o valor obtido couber no que a causa descreve; senão,
+# "diverge".
+#
+# Campos: provavel_causa e encaminhamento (obrigatórios). Opcionais, para
+# conferir que a causa ainda cobre o valor obtido:
+#   anos             anos em que a diferença pode aparecer;
+#   acoes            ações em que a diferença pode aparecer;
+#   max_diferenca    maior diferença, em valor absoluto, que a causa explica;
+#   valor_r_esperado o valor que o cálculo em R tem de dar para a causa valer.
+# Códigos sempre entre aspas.
+
+estrutura_juventude_safras:
+  anos: [2008, 2009, 2010, 2011]
+  acoes: ["ZD01", "ZM02"]
+  # Medido nos dados gerados (última linha impressa pelo gerador): 7.057.582
+  # reais, a maior diferença entre as safras em um ano e uma fase.
+  max_diferenca: 7057582
+  provavel_causa: "Fenômeno criado pelo gerador (scripts/gerar_dados_sinteticos.R): de 2008 a 2011 a safra nova tem linhas a mais, da ação ZD01 (palavra-chave chave-delta, acrescentada depois) e da ZM02 (inclusão manual)."
+  encaminhamento: "Nenhuma correção: o recorte usa a safra nova em todos os anos. Detalhe na seção Duas safras do relatório."

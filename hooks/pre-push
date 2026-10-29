@@ -1,0 +1,79 @@
+#!/bin/sh
+# Antes de cada push, roda a checagem anti-vazamento sobre cada commit que vai
+# ser enviado (e não só o último: um vazamento apagado em um commit seguinte
+# continuaria no histórico publicado). O conteúdo de cada commit é exportado
+# para uma pasta temporária e checado lá. Qualquer resultado que não seja
+# "nada encontrado" (status 0) bloqueia o push, inclusive quando a checagem
+# não pôde rodar (status 2).
+#
+# Ativação (uma vez por clone):  git config core.hooksPath hooks
+# Rscript: usa $RSCRIPT se definido; senão o do scoop no Windows; senão o do PATH.
+# Pasta privada: $CONFERENCIA_PRIVADO (obrigatória; sem ela o push é bloqueado).
+
+raiz="$(git rev-parse --show-toplevel)" || exit 1
+cd "$raiz" || exit 1
+
+if [ -n "$RSCRIPT" ]; then
+  R="$RSCRIPT"
+elif [ -x "$HOME/scoop/apps/r/current/bin/x64/Rscript.exe" ]; then
+  R="$HOME/scoop/apps/r/current/bin/x64/Rscript.exe"
+elif command -v Rscript >/dev/null 2>&1; then
+  R="Rscript"
+else
+  echo "pre-push: não achei o Rscript. Defina RSCRIPT com o caminho dele. Push bloqueado."
+  exit 1
+fi
+
+if [ -z "$CONFERENCIA_PRIVADO" ]; then
+  echo "pre-push: defina CONFERENCIA_PRIVADO com a pasta da conferência privada. Push bloqueado (não checado)."
+  exit 1
+fi
+
+tmp="$(mktemp -d 2>/dev/null)" || { echo "pre-push: não consegui criar pasta temporária. Push bloqueado."; exit 1; }
+trap 'rm -rf "$tmp"' EXIT
+
+zero="0000000000000000000000000000000000000000"
+: > "$tmp/commits"
+# O git passa, uma por linha: <ref local> <sha local> <ref remota> <sha remoto>.
+while read -r ref_local sha_local ref_remota sha_remoto; do
+  [ "$sha_local" = "$zero" ] && continue   # apagar uma ref remota não publica nada
+  if [ "$sha_remoto" = "$zero" ]; then
+    # Ref nova no remoto: todos os commits que nenhum remoto ainda tem.
+    git rev-list "$sha_local" --not --remotes >> "$tmp/commits" || exit 1
+  else
+    git rev-list "$sha_remoto..$sha_local" >> "$tmp/commits" || exit 1
+  fi
+done
+
+if [ ! -s "$tmp/commits" ]; then
+  exit 0
+fi
+
+# Um commit por vez; commits com a mesma árvore de arquivos são checados uma vez.
+: > "$tmp/arvores"
+n=0
+for c in $(sort -u "$tmp/commits"); do
+  arvore="$(git rev-parse "$c^{tree}")" || exit 1
+  if grep -qx "$arvore" "$tmp/arvores"; then
+    continue
+  fi
+  echo "$arvore" >> "$tmp/arvores"
+  n=$((n + 1))
+  dest="$tmp/c$n"
+  mkdir -p "$dest"
+  if ! git archive --format=tar "$c" | tar -xf - -C "$dest"; then
+    echo "pre-push: não consegui exportar o commit $c. Push bloqueado (não checado)."
+    exit 1
+  fi
+  echo "pre-push: checando o commit $c"
+  "$R" verificar_vazamento.R --privado "$CONFERENCIA_PRIVADO" --raiz "$dest"
+  status=$?
+  rm -rf "$dest"
+  case $status in
+    0) ;;
+    1) echo "pre-push: push bloqueado, o commit $c contém termos da conferência privada (lista acima)."; exit 1 ;;
+    2) echo "pre-push: push bloqueado, a checagem do commit $c não pôde terminar (motivo acima)."; exit 1 ;;
+    *) echo "pre-push: push bloqueado, a checagem do commit $c terminou com erro (status $status)."; exit 1 ;;
+  esac
+done
+exit 0

@@ -1,0 +1,70 @@
+# Regras da checagem anti-vazamento (verificar_vazamento.R).
+#
+# A lista do que é proibido NÃO fica aqui: ela é lida, na hora da checagem, da
+# pasta privada da conferência. Este arquivo guarda só as exceções, para que
+# cada uma fique à vista e comentada.
+
+# Palavras genéricas que descrevem o tema do projeto. Elas também fazem parte
+# da lista real de palavras-chave do recorte, mas sozinhas não revelam nada:
+# qualquer texto sobre o projeto precisa delas, inclusive o código (que fala
+# em "recorte de juventude"). Por isso são permitidas em qualquer arquivo
+# (decisão D9, 29/10/2026). As demais palavras-chave do recorte, e qualquer
+# lista delas, continuam proibidas em todo lugar.
+termos_permitidos_em_qualquer_arquivo:
+  - juventude
+  - jovem
+  - jovens
+
+# Termos permitidos só em arquivos de documentação (extensões abaixo e pastas
+# de documentação). Hoje vazio: as palavras genéricas passaram para a lista
+# acima.
+termos_permitidos_em_documentacao: []
+
+extensoes_de_documentacao: [md, qmd, yml, yaml]
+
+# Pessoas cujo nome pode aparecer: só o autor da vitrine, que assina a licença,
+# a citação e a nota de uso de IA. Os demais nomes da equipe e todas as pessoas
+# entrevistadas continuam proibidos em qualquer arquivo.
+pessoas_permitidas:
+  - André Trevisol Trindade
+
+# Conteúdo embutido em arquivos gerados. O relatório de exemplo
+# (docs/relatorio.html) é um HTML com tudo dentro: fontes, estilos e
+# bibliotecas de terceiros (Bootstrap, gráficos, tabelas) vão em endereços
+# "data:" e em blocos <script> e <style>. Esse código minificado casa por acaso
+# com códigos de ação de quatro caracteres e com números curtos. Com true, a
+# checagem apaga esses trechos antes de procurar (mantendo os números de linha)
+# e mostra quantos apagou. Os dados das tabelas interativas, que são nossos,
+# ficam em <script type="application/json"> e continuam checados; o texto,
+# as tabelas e as legendas também. Imagens não são lidas de qualquer jeito.
+ignorar_conteudo_embutido: true
+
+# Pastas cujo conteúdo inteiro é documentação gerada a partir dos .qmd (o site
+# renderizado: páginas .html e o índice de busca .json). Valem as mesmas
+# exceções dos arquivos de documentação.
+pastas_de_documentacao:
+  - docs
+
+# Pastas que não são publicadas ou não são texto nosso: o histórico do git, a
+# biblioteca de pacotes do renv, o cache do targets e os arquivos de trabalho
+# do Quarto. A pasta docs/ (site gerado) NÃO entra aqui: ela vai para o ar e
+# é checada. Só docs/site_libs fica de fora: são cópias sem alteração de
+# bibliotecas públicas (Bootstrap, Mermaid, busca) que o Quarto inclui no site;
+# os números soltos do código minificado delas casariam por acaso com os
+# arredondamentos em bilhões e não vêm de nada nosso.
+# O renv.lock fica de fora pelo mesmo motivo (29/10/2026): o renv o gera a
+# partir dos metadados públicos dos pacotes (nome, versão, autores), sem
+# nenhum texto nosso, e os identificadores ORCID dos autores (por exemplo
+# 0000-0003-...-...) têm blocos de quatro dígitos que casaram por acaso com
+# códigos de ação na primeira checagem (18 ocorrências, todas em ORCID).
+pastas_ignoradas:
+  - .git
+  - renv.lock
+  - docs/site_libs
+  - renv/library
+  - renv/staging
+  - renv/sandbox
+  - _targets
+  - site/_site
+  - site/.quarto
+  - .quarto
